@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Textile Inventory Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    :root{
+      --bg:#f5f2eb;
+      --surface:#ffffff;
+      --surface-2:#f8f5ef;
+      --ink:#1b1b1b;
+      --muted:#6b7280;
+      --brand:#0b0b0f;
+      --gold:#c8a64a;
+      --gold-dark:#9a7b2f;
+      --line:#e6dfd2;
+      --ok:#16a34a;
+      --low:#dc2626;
+    }
+    body { background:var(--bg); color:var(--ink); }
+    .topbar { background:linear-gradient(90deg,#121212,#1f1f1f 45%, #0f0f0f); color:#fff; border-bottom:3px solid var(--gold); }
+    .card { border:1px solid var(--line); border-radius:12px; background:var(--surface); color:var(--ink); box-shadow:0 6px 16px rgba(0,0,0,.08); }
+    .small-muted { color:var(--muted); font-size:.85rem; }
+    .table thead th { background:var(--surface-2); font-size:.9rem; border-bottom:1px solid var(--line); }
+    .table tbody tr:hover { background:rgba(200,166,74,.08); }
+    .stock-pill { border-radius:6px; padding:1px 7px; font-size:.78rem; color:#fff; font-weight:600; }
+    .stock-ok { background:var(--ok); }
+    .stock-low { background:var(--low); }
+    .progress { height:7px; background:#e5e7eb; }
+    .dashboard-wrap { max-width:1380px; margin:auto; }
+    .chart-box { height:240px; }
+    .legend-low { color:var(--low); font-weight:600; font-size:.75rem; }
+    .btn-primary{ background:var(--gold); border-color:var(--gold); color:#1b1b1b; font-weight:600; }
+    .btn-primary:hover{ background:var(--gold-dark); border-color:var(--gold-dark); color:#fff; }
+    .btn-outline-info{ border-color:var(--gold); color:var(--gold-dark); }
+    .btn-outline-info:hover{ background:var(--gold); color:#1b1b1b; border-color:var(--gold); }
+    .btn-outline-secondary{ border-color:#d1d5db; color:#374151; }
+    .form-control:focus,.form-select:focus{ border-color:var(--gold); box-shadow:0 0 0 .2rem rgba(200,166,74,.2); }
+    .badge.bg-danger{ background:#b91c1c !important; }
+  </style>
+</head>
+<body>
+  <header class="topbar py-3 mb-3">
+    <div class="container-fluid dashboard-wrap d-flex align-items-center justify-content-between">
+      <div>
+        <h1 class="h3 mb-0"><i class="bi bi-box-seam me-2"></i>Textile Inventory Management</h1>
+        <small class="opacity-75">SQL Server database <code class="text-danger-emphasis">TextileManagementSystem</code></small>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-light btn-sm"><i class="bi bi-moon-stars"></i> Theme</button>
+        <button class="btn btn-light btn-sm"><i class="bi bi-person-circle"></i> Admin User</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container-fluid dashboard-wrap pb-4">
+    <div class="row g-3">
+      <div class="col-xl-8">
+        <div class="card p-3">
+          <div class="mb-2 d-flex gap-2">
+            <input id="searchInput" class="form-control" placeholder="Search products..." />
+          </div>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <select id="categoryFilter" class="form-select form-select-sm" style="max-width:140px"><option value="">All Categories</option></select>
+            <select id="supplierFilter" class="form-select form-select-sm" style="max-width:140px"><option value="">All Suppliers</option></select>
+            <select id="stockFilter" class="form-select form-select-sm" style="max-width:120px">
+              <option value="">All Stock</option>
+              <option value="low">Low</option>
+              <option value="ok">Healthy</option>
+            </select>
+            <button id="searchBtn" class="btn btn-primary btn-sm"><i class="bi bi-search me-1"></i>Search</button>
+            <button id="refreshBtn" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+            <button id="exportBtn" class="btn btn-outline-info btn-sm"><i class="bi bi-download me-1"></i>Export CSV</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Code</th><th>Name</th><th>Category</th><th>Stock</th><th>Reorder</th><th>Supplier</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-4">
+        <div class="card p-3 mb-3">
+          <h5><i class="bi bi-speedometer2 me-1"></i>Inventory Summary</h5>
+          <div class="row small">
+            <div class="col-6 fw-semibold text-secondary">Total products</div><div class="col-6" id="sumTotalProducts">-</div>
+            <div class="col-6 fw-semibold text-secondary">Total items</div><div class="col-6" id="sumTotalItems">-</div>
+            <div class="col-6 fw-semibold text-secondary">Inventory value</div><div class="col-6" id="sumTotalValue">-</div>
+            <div class="col-6 fw-semibold text-secondary">Potential profit</div><div class="col-6" id="sumPotentialProfit">-</div>
+          </div>
+        </div>
+
+        <div class="card p-3 mb-3">
+          <h5><i class="bi bi-exclamation-triangle me-1"></i>Low Stock Alerts</h5>
+          <ul id="alertsList" class="list-group list-group-flush"></ul>
+          <div class="chart-box mt-2"><canvas id="lowStockChart"></canvas></div>
+        </div>
+
+        <div class="card p-3">
+          <h5><i class="bi bi-journal-text me-1"></i>Activity Log</h5>
+          <ul id="activityLog" class="mb-0 small">
+            <li class="small-muted">Waiting for actions...</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-3 mt-3">
+      <div class="row g-3">
+        <div class="col-lg-6">
+          <h6 class="text-center fw-bold">Stock by Category</h6>
+          <div class="chart-box"><canvas id="categoryChart"></canvas></div>
+        </div>
+        <div class="col-lg-6">
+          <h6 class="text-center fw-bold">Supplier Comparison</h6>
+          <div class="chart-box"><canvas id="supplierChart"></canvas></div>
+        </div>
+        <div class="col-12">
+          <h6 class="text-center fw-bold">Stock Levels Trend</h6>
+          <div class="chart-box"><canvas id="trendChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade" id="stockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="stockModalTitle" class="modal-title">Adjust Stock</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="stockProductId" />
+          <input type="hidden" id="stockAction" />
+          <label class="form-label">Product</label>
+          <input id="stockProductName" class="form-control mb-2" disabled />
+          <label class="form-label">Quantity</label>
+          <input id="stockQuantity" class="form-control mb-2" type="number" min="1" />
+          <label class="form-label">Reference</label>
+          <input id="stockReference" class="form-control mb-2" />
+          <label class="form-label">Notes</label>
+          <textarea id="stockNotes" class="form-control" rows="2"></textarea>
+          <div id="stockError" class="alert alert-danger mt-2 d-none"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="stockSaveBtn" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script>
+    const API='/api', REORDER=20;
+    let products=[], alerts=[], lowChart, categoryChart, supplierChart, trendChart;
+
+    const toast = (msg) => { console.log(msg); addLog(msg); };
+    function addLog(msg){ const ul=document.getElementById('activityLog'); ul.innerHTML=`<li>${new Date().toLocaleTimeString()} - ${msg}</li>`+ul.innerHTML; }
+    async function json(url,opt){ const r=await fetch(url,opt); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+    function lkr(v){ return new Intl.NumberFormat('en-LK',{style:'currency',currency:'LKR'}).format(v||0); }
+
+    function fillFilters(){
+      const cats=[...new Set(products.map(p=>p.categoryName).filter(Boolean))];
+      const sups=[...new Set(products.map(p=>p.supplierName).filter(Boolean))];
+      const cf=document.getElementById('categoryFilter'); const sf=document.getElementById('supplierFilter');
+      cf.innerHTML='<option value="">All Categories</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+      sf.innerHTML='<option value="">All Suppliers</option>'+sups.map(s=>`<option>${s}</option>`).join('');
+    }
+
+    function currentRows(){
+      const s=document.getElementById('searchInput').value.trim().toLowerCase();
+      const c=document.getElementById('categoryFilter').value;
+      const sp=document.getElementById('supplierFilter').value;
+      const st=document.getElementById('stockFilter').value;
+      return products.filter(p=>{
+        const q=(p.stockQuantity??0), r=(p.reorderLevel??REORDER);
+        const okSearch=!s || [p.productCode,p.productName,p.categoryName,p.supplierName].join(' ').toLowerCase().includes(s);
+        const okCat=!c || p.categoryName===c;
+        const okSup=!sp || p.supplierName===sp;
+        const okStock=!st || (st==='low' ? q<=r : q>r);
+        return okSearch && okCat && okSup && okStock;
+      });
+    }
+
+    function renderTable(){
+      const rows=currentRows();
+      const tb=document.getElementById('productsTableBody');
+      if(!rows.length){ tb.innerHTML='<tr><td colspan="7" class="text-center py-4 text-muted">No products found</td></tr>'; return; }
+      tb.innerHTML=rows.map(p=>{
+        const q=p.stockQuantity??0, r=p.reorderLevel??REORDER, low=q<=r;
+        const pct=Math.max(5,Math.min(100,Math.round((q/(r*2))*100)));
+        return `<tr>
+          <td>${p.productCode??p.productId}</td>
+          <td>${p.productName??'-'}</td>
+          <td>${p.categoryName??'-'}</td>
+          <td>
+            <span class="stock-pill ${low?'stock-low':'stock-ok'}">${q}</span>
+            <div class="progress mt-1"><div class="progress-bar ${low?'bg-danger':'bg-success'}" style="width:${pct}%"></div></div>
+            <small class="small-muted">${pct}%</small>
+          </td>
+          <td>${r}</td>
+          <td>${p.supplierName??'-'}</td>
+          <td>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-success" data-act="add" data-id="${p.productId}" data-name="${p.productName}">+ Stock</button>
+              <button class="btn btn-outline-danger" data-act="remove" data-id="${p.productId}" data-name="${p.productName}">- Stock</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function renderSummary(sum){
+      document.getElementById('sumTotalProducts').textContent=sum.totalProducts??'-';
+      document.getElementById('sumTotalItems').textContent=sum.totalItems??'-';
+      document.getElementById('sumTotalValue').textContent=sum.totalInventoryValue!=null?lkr(sum.totalInventoryValue):'-';
+      document.getElementById('sumPotentialProfit').textContent=sum.potentialProfit!=null?lkr(sum.potentialProfit):'-';
+    }
+
+    function renderAlerts(){
+      const ul=document.getElementById('alertsList');
+      if(!alerts.length){ ul.innerHTML='<li class="list-group-item small text-muted">No low stock alerts.</li>'; }
+      else{
+        ul.innerHTML=alerts.map(a=>`<li class="list-group-item small">
+          <div class="fw-semibold">${a.productCode} - ${a.productName} <span class="badge bg-danger float-end">Low</span></div>
+          <div class="small text-muted">Stock: ${a.stockQuantity} | Reorder: ${a.reorderLevel??REORDER}</div>
+        </li>`).join('');
+      }
+    }
+
+    function drawCharts(){
+      const rows=currentRows();
+      const catMap={}, supMap={};
+      rows.forEach(p=>{ catMap[p.categoryName||'Uncategorized']=(catMap[p.categoryName||'Uncategorized']||0)+1; supMap[p.supplierName||'Unknown']=(supMap[p.supplierName||'Unknown']||0)+1; });
+      const labels=rows.map((r,i)=>i+1), vals=rows.map(r=>r.stockQuantity??0);
+
+      if(lowChart) lowChart.destroy();
+      if(categoryChart) categoryChart.destroy();
+      if(supplierChart) supplierChart.destroy();
+      if(trendChart) trendChart.destroy();
+
+      lowChart=new Chart(document.getElementById('lowStockChart'),{
+        type:'bar',
+        data:{labels:alerts.map(a=>a.productId),datasets:[
+          {label:'Current Stock',data:alerts.map(a=>a.stockQuantity??0),backgroundColor:'rgba(220,53,69,.75)'},
+          {label:'Reorder Level',data:alerts.map(a=>a.reorderLevel??REORDER),backgroundColor:'rgba(14,165,233,.65)'}
+        ]},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+      });
+
+      categoryChart=new Chart(document.getElementById('categoryChart'),{
+        type:'pie',
+        data:{labels:Object.keys(catMap),datasets:[{data:Object.values(catMap),backgroundColor:['#0ea5e9','#8b5cf6','#22c55e','#f59e0b','#ef4444']}]},
+        options:{responsive:true,maintainAspectRatio:false}
+      });
+
+      supplierChart=new Chart(document.getElementById('supplierChart'),{
+        type:'bar',
+        data:{labels:Object.keys(supMap),datasets:[{label:'Products',data:Object.values(supMap),backgroundColor:'rgba(14,165,233,.7)'}]},
+        options:{responsive:true,maintainAspectRatio:false}
+      });
+
+      trendChart=new Chart(document.getElementById('trendChart'),{
+        type:'line',
+        data:{labels,datasets:[{label:'Stock Trend',data:vals,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.25)',fill:true,tension:.3}]},
+        options:{responsive:true,maintainAspectRatio:false}
+      });
+    }
+
+    function exportCsv(){
+      const rows=currentRows();
+      const lines=[['ProductID','Code','Name','Category','Supplier','Stock','Reorder','Price'].join(',')];
+      rows.forEach(p=>lines.push([p.productId,p.productCode,p.productName,p.categoryName,p.supplierName,p.stockQuantity,p.reorderLevel,p.unitPrice].map(v=>`"${(v??'').toString().replaceAll('"','""')}"`).join(',')));
+      const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='products.csv'; a.click();
+      toast('Exported CSV');
+    }
+
+    async function loadAll(){
+      const [p,a,s]=await Promise.all([json(API+'/products'), json(API+'/alerts/low-stock'), json(API+'/inventory/value')]);
+      products=Array.isArray(p)?p:[]; alerts=Array.isArray(a)?a:[];
+      fillFilters(); renderTable(); renderAlerts(); renderSummary(s||{}); drawCharts(); addLog('Data refreshed');
+    }
+
+    function setupModal(){
+      const modalEl=document.getElementById('stockModal'), modal=new bootstrap.Modal(modalEl), err=document.getElementById('stockError');
+      document.getElementById('productsTableBody').addEventListener('click',(e)=>{
+        const btn=e.target.closest('button[data-act]'); if(!btn) return;
+        document.getElementById('stockAction').value=btn.dataset.act;
+        document.getElementById('stockProductId').value=btn.dataset.id;
+        document.getElementById('stockProductName').value=btn.dataset.name;
+        document.getElementById('stockModalTitle').textContent=btn.dataset.act==='add'?'Add Stock':'Remove Stock';
+        document.getElementById('stockQuantity').value=''; document.getElementById('stockReference').value=''; document.getElementById('stockNotes').value='';
+        err.classList.add('d-none'); err.textContent=''; modal.show();
+      });
+      document.getElementById('stockSaveBtn').addEventListener('click', async ()=>{
+        const id=document.getElementById('stockProductId').value, act=document.getElementById('stockAction').value;
+        const quantity=parseInt(document.getElementById('stockQuantity').value,10);
+        if(!quantity||quantity<1){ err.textContent='Please enter a valid quantity.'; err.classList.remove('d-none'); return; }
+        if(act==='remove' && !window.confirm('Are you sure you want to remove stock?')) return;
+        try{
+          await json(`${API}/products/${id}/${act==='add'?'add-stock':'remove-stock'}`,{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({quantity,referenceNumber:document.getElementById('stockReference').value||null,notes:document.getElementById('stockNotes').value||null})
+          });
+          modal.hide(); toast(`Stock ${act==='add'?'added':'removed'} successfully`); await loadAll();
+        }catch(ex){ err.textContent=ex.message||'Failed to update stock.'; err.classList.remove('d-none'); }
+      });
+    }
+
+    document.getElementById('searchBtn').addEventListener('click',()=>{ renderTable(); drawCharts(); });
+    document.getElementById('refreshBtn').addEventListener('click',loadAll);
+    document.getElementById('exportBtn').addEventListener('click',exportCsv);
+    document.getElementById('categoryFilter').addEventListener('change',()=>{ renderTable(); drawCharts(); });
+    document.getElementById('supplierFilter').addEventListener('change',()=>{ renderTable(); drawCharts(); });
+    document.getElementById('stockFilter').addEventListener('change',()=>{ renderTable(); drawCharts(); });
+    document.getElementById('searchInput').addEventListener('keyup',e=>{ if(e.key==='Enter'){ renderTable(); drawCharts(); } });
+
+    setupModal();
+    loadAll().catch(()=>{ document.getElementById('productsTableBody').innerHTML='<tr><td colspan="7" class="text-center text-danger py-4">Failed to load data.</td></tr>'; });
+  </script>
+</body>
+</html>
