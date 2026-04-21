@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Premium Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: url('images/bg.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #334155;
+            padding-bottom: 50px;
+            position: relative;
+            z-index: 1;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            z-index: -1;
+        }
+        .custom-navbar {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-link {
+            font-weight: 500;
+            color: #cbd5e1 !important;
+            transition: color 0.2s;
+            padding: 8px 15px !important;
+            border-radius: 8px;
+        }
+        .nav-link:hover {
+            color: #fff !important;
+            background: rgba(255,255,255,0.05);
+        }
+        .profile-container {
+            margin-top: 40px;
+        }
+        .profile-card {
+            background: #fff;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            margin-bottom: 30px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+        }
+        .profile-header {
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .profile-header-icon {
+            background: #eff6ff;
+            color: #3b82f6;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .profile-header h4 {
+            margin: 0;
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 18px;
+        }
+        .card-body {
+            padding: 30px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .info-label {
+            width: 140px;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .info-value {
+            font-weight: 500;
+            color: #0f172a;
+            flex-grow: 1;
+        }
+        .role-badge {
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 13px;
+        }
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            font-size: 14px;
+        }
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background-color: #fff;
+        }
+        .btn-modern {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-primary-custom {
+            background: #3b82f6;
+            color: white;
+            border: none;
+        }
+        .btn-primary-custom:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            color: white;
+        }
+        .btn-warning-custom {
+            background: #f59e0b;
+            color: white;
+            border: none;
+        }
+        .btn-warning-custom:hover {
+            background: #d97706;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+            color: white;
+        }
+        .btn-outline-custom {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            color: #64748b;
+        }
+        .btn-outline-custom:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .alert-custom {
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fa-solid fa-crown text-warning"></i> TMS Premium
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-2">
+                    <li class="nav-item"><a class="nav-link" href="profile.html"><i class="fa-solid fa-user me-1"></i> Profile</a></li>
+                    <li id="adminLink" class="nav-item d-none"><a class="nav-link" href="admin.html"><i class="fa-solid fa-shield-halved me-1"></i> Admin</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="#" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container profile-container">
+        <div class="row w-100 justify-content-center mx-auto g-4">
+            
+            <div class="col-lg-6">
+                <div class="profile-card h-100 mb-0">
+                    <div class="profile-header">
+                        <div class="profile-header-icon"><i class="fa-solid fa-id-card"></i></div>
+                        <h4>Profile Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="profileMessage" class="alert alert-custom d-none mb-4"><i class="fa-solid fa-circle-check me-2"></i><span id="profileMsgText"></span></div>
+                        
+                        <div id="profileView">
+                            <div class="info-row">
+                                <div class="info-label">Full Name</div>
+                                <div class="info-value" id="viewName">Loading...</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Email Address</div>
+                                <div class="info-value" id="viewEmail">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value" id="viewPhone">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Physical Address</div>
+                                <div class="info-value" id="viewAddress">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Account Role</div>
+                                <div class="info-value"><span class="role-badge" id="viewRole">-</span></div>
+                            </div>
+                            
+                            <div class="mt-4 pt-2">
+                                <button class="btn btn-modern btn-primary-custom" id="editProfileBtn">
+                                    <i class="fa-solid fa-pen-to-square me-2"></i> Edit Profile
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="profileEdit" style="display:none;">
+                            <form id="editProfileForm">
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Full Name</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fa-solid fa-user text-muted"></i></span>
+                                            <input type="text" id="editName" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Email Address <span class="text-danger small ms-2">(Modification restricted by Admin)</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fa-solid fa-envelope text-muted"></i></span>
+                                            <input type="email" id="editEmail" class="form-control" readonly style="background-color: #e2e8f0; color: #64748b; cursor: not-allowed;">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label">Phone Number</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fa-solid fa-phone text-muted"></i></span>
+                                            <input type="text" id="editPhone" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-4">
+                                        <label class="form-label">Address</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fa-solid fa-location-dot text-muted"></i></span>
+                                            <input type="text" id="editAddress" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-modern btn-primary-custom flex-grow-1"><i class="fa-solid fa-save me-2"></i>Save Changes</button>
+                                    <button type="button" class="btn btn-modern btn-outline-custom" id="cancelEditBtn">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="profile-card h-100 mb-0">
+                    <div class="profile-header">
+                        <div class="profile-header-icon" style="background: #fef3c7; color: #d97706;"><i class="fa-solid fa-lock"></i></div>
+                        <h4>Update Password</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="passwordMessage" class="alert alert-custom d-none mb-4"><i class="fa-solid fa-circle-check me-2"></i><span id="passMsgText"></span></div>
+                        <form id="changePasswordForm">
+                            <div class="mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" id="currentPassword" class="form-control" placeholder="Enter current password" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">New Password</label>
+                                <input type="password" id="newPassword" class="form-control" placeholder="Enter new strong password" required>
+                            </div>
+                            <button type="submit" class="btn btn-modern btn-warning-custom w-100">
+                                <i class="fa-solid fa-key me-2"></i> Change Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        if (!localStorage.getItem('token')) {
+            window.location.href = 'login.html';
+        }
+
+        const token = localStorage.getItem('token');
+        let currentUser = JSON.parse(localStorage.getItem('user'));
+
+        if (currentUser.roleName === 'Admin' || currentUser.roleName === 'Owner') {
+            document.getElementById('adminLink').classList.remove('d-none');
+        }
+
+        async function loadProfile() {
+            try {
+                const response = await fetch('http://localhost:8080/api/users/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const user = await response.json();
+                if (!response.ok) throw new Error(user.error || 'Failed to load profile');
+                
+                currentUser = user;
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                document.getElementById('viewName').innerText = user.fullName;
+                document.getElementById('viewEmail').innerText = user.email;
+                document.getElementById('viewPhone').innerText = user.phone || 'N/A';
+                document.getElementById('viewAddress').innerText = user.address || 'N/A';
+                document.getElementById('viewRole').innerText = user.roleName;
+
+                // Adjust role badge color dynamically
+                const rb = document.getElementById('viewRole');
+                if(user.roleName === 'Admin' || user.roleName === 'Owner') {
+                    rb.style.background = '#fef2f2'; rb.style.color = '#dc2626';
+                } else if(user.roleName === 'Staff' || user.roleName === 'SalesManager') {
+                    rb.style.background = '#f0fdf4'; rb.style.color = '#16a34a';
+                } else {
+                    rb.style.background = '#dbeafe'; rb.style.color = '#1d4ed8';
+                }
+
+            } catch (error) {
+                console.error('Error loading profile: ' + error.message);
+            }
+        }
+
+        document.getElementById('editProfileBtn').addEventListener('click', () => {
+            document.getElementById('profileView').style.display = 'none';
+            document.getElementById('profileEdit').style.display = 'block';
+            document.getElementById('editName').value = currentUser.fullName;
+            document.getElementById('editEmail').value = currentUser.email;
+            document.getElementById('editPhone').value = currentUser.phone || '';
+            document.getElementById('editAddress').value = currentUser.address || '';
+        });
+
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            document.getElementById('profileEdit').style.display = 'none';
+            document.getElementById('profileView').style.display = 'block';
+        });
+
+        document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const updated = {
+                fullName: document.getElementById('editName').value,
+                email: document.getElementById('editEmail').value,
+                phone: document.getElementById('editPhone').value,
+                address: document.getElementById('editAddress').value
+            };
+            try {
+                const response = await fetch('http://localhost:8080/api/users/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(updated)
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Update failed');
+                
+                const msgDiv = document.getElementById('profileMessage');
+                const t = document.getElementById('profileMsgText');
+                t.textContent = 'Profile updated successfully!';
+                msgDiv.classList.remove('d-none');
+                
+                // Hide view, show edit temporarily
+                document.getElementById('profileEdit').style.display = 'none';
+                document.getElementById('profileView').style.display = 'block';
+                loadProfile(); 
+                
+                setTimeout(() => msgDiv.classList.add('d-none'), 3000);
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            try {
+                const response = await fetch('http://localhost:8080/api/users/change-password', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Password change failed');
+                
+                const msgDiv = document.getElementById('passwordMessage');
+                const t = document.getElementById('passMsgText');
+                t.textContent = 'Password changed successfully!';
+                msgDiv.classList.remove('d-none');
+                
+                setTimeout(() => msgDiv.classList.add('d-none'), 3000);
+                document.getElementById('changePasswordForm').reset();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch('http://localhost:8080/api/auth/logout', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (e) { }
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        loadProfile();
+    </script>
+</body>
+</html>
