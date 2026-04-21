@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ZEE FASHION — Cart & Checkout</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/user.css">
+    <link rel="stylesheet" href="/css/cart.css">
+</head>
+
+<body>
+<header class="topbar">
+    <div class="brand">
+        <div class="brand-logo">🧵</div>
+        <div>
+            <div class="brand-name">ZEE FASHION</div>
+            <div class="brand-sub">Cart & Checkout</div>
+        </div>
+    </div>
+
+    <nav class="global-nav" id="globalNav">
+      <a href="/pages/products.html" data-role="CUSTOMER">Shop</a>
+      <a href="/pages/inventory.html" data-role="INVENTORY_ADMIN">Inventory</a>
+      <a href="/pages/cart.html" class="active" data-role="CUSTOMER">Cart</a>
+      <a href="/pages/order.html" data-role="STAFF">Orders</a>
+      <a href="/pages/sales.html" data-role="SALES_MANAGER">Sales</a>
+      <a href="/pages/sup.html" data-role="INVENTORY_ADMIN">Suppliers</a>
+      <a href="/pages/users.html" data-role="ADMIN">Users</a>
+      <a href="/pages/login.html" id="navLogin">Login</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <a href="/pages/cart.html" class="btn primary" style="text-decoration:none; margin-right:10px;">🛒 Cart (<span id="cartCount">0</span>)</a>
+      <div class="user-pill" id="userPill">
+        <span id="pillName">User</span>
+      </div>
+      <button class="btn ghost" onclick="logoutApp()" style="margin-left: 10px;">Logout</button>
+    </div>
+</header>
+<script>
+    function logoutApp(){
+        localStorage.removeItem('zeefashion_user');
+        localStorage.removeItem('zeefashion_cart');
+        window.location.href='/pages/login.html';
+    }
+</script>
+
+<div class="progress-bar">
+    <div class="step done"><div class="step-num">✓</div><span>Browse</span></div>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-num">2</div><span>Cart</span></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-num">3</div><span>Payment</span></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-num">4</div><span>Confirmation</span></div>
+</div>
+
+<div class="page-title">Shopping Cart</div>
+<div class="page-subtitle">Review your selected fabric items before checkout</div>
+
+<div class="main-layout">
+    <div>
+        <div class="section-header">
+            <div class="section-title">Your Items (<span id="itemCount">0</span>)</div>
+        </div>
+
+        <div class="cart-items" id="cartItems"></div>
+
+        <div class="empty-cart" id="emptyCart">
+            <div class="empty-cart-icon">🧵</div>
+            <h3>Your cart is empty</h3>
+            <p>Explore our premium textile collection and add items to your cart.</p>
+        </div>
+    </div>
+
+    <div>
+        <div class="summary-card">
+            <div class="summary-title">Order Summary</div>
+
+            <div class="summary-row">
+                <span>Subtotal (<span id="summaryCount">0</span> items)</span>
+                <span id="subtotal">Rs. 0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping</span>
+                <span id="shippingFee">Rs. 0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Tax (8%)</span>
+                <span id="taxAmount">Rs. 0.00</span>
+            </div>
+
+
+            <div class="summary-row" id="discountRow" style="display:none">
+                <span id="discountLabel">Discount</span>
+                <span id="discountAmount" style="color:var(--green)">- Rs. 0.00</span>
+            </div>
+
+            <div class="coupon-section" id="couponSection">
+                <div class="coupon-input-group">
+                    <input type="text" class="coupon-input" id="couponInput" placeholder="Promo / Coupon Case-Sensitive">
+                    <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+                </div>
+            </div>
+
+
+            <div class="summary-total">
+                <span class="summary-total-label">Total</span>
+                <span class="summary-total-amount" id="totalAmount">Rs. 0.00</span>
+            </div>
+
+            <button class="checkout-btn" id="checkoutBtn" onclick="openPayment()">Proceed to Checkout →</button>
+            <div class="secure-note">🔒 Secured by SSL encryption</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== PAYMENT MODAL ===================== -->
+<div class="modal-overlay" id="paymentModal">
+    <div class="modal">
+        <div class="payment-form-content" id="paymentFormContent">
+            <div class="modal-header">
+                <div class="modal-title">Checkout</div>
+                <button class="modal-close" onclick="closePayment()">✕</button>
+            </div>
+
+            <div class="mini-summary">
+                <div id="miniItems"></div>
+                <div class="mini-summary-total">
+                    <span>Total to Pay</span>
+                    <span id="miniTotal">Rs. 0.00</span>
+                </div>
+            </div>
+
+            <div class="form-section-title">Shipping Information</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input class="form-input" type="text" placeholder="Kamal" id="firstName"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input class="form-input" type="text" placeholder="Perera" id="lastName"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input class="form-input" type="email" placeholder="kamal@email.com" id="email"/>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input class="form-input" type="tel" placeholder="+94 77 123 4567" id="phone"/>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Delivery Address</label>
+                <input class="form-input" type="text" placeholder="No. 12, Galle Road, Colombo 03" id="address"/>
+            </div>
+
+            <div class="form-section-title">Payment Method</div>
+
+            <div class="pay-tabs">
+                <button class="pay-tab active" type="button" onclick="switchPay('COD', this)">
+                    <span class="pay-tab-icon">💵</span>
+                    <span>Cash on Delivery</span>
+                </button>
+                <button class="pay-tab" type="button" onclick="switchPay('BANK', this)">
+                    <span class="pay-tab-icon">🏦</span>
+                    <span>Bank Transfer</span>
+                </button>
+            </div>
+
+            <!-- COD -->
+            <div id="tab-cod">
+                <div class="info-box success">
+                    <strong>✓ Cash on Delivery Available</strong><br/><br/>
+                    Pay when your order arrives.<br/>
+                    Delivery time: <strong>3–5 business days</strong><br/>
+                    COD fee: <strong>Rs. 100</strong><br/><br/>
+                    <em>Make sure someone is available to receive the order.</em>
+                </div>
+            </div>
+
+            <!-- BANK -->
+            <div id="tab-bank" style="display:none">
+                <div class="info-box neutral">
+                    <strong class="bank-title">Bank Account Details</strong><br/><br/>
+                    🏦 <strong>Bank:</strong> Commercial Bank of Ceylon<br/>
+                    📋 <strong>Account Name:</strong> ZEE FASHION PVT LTD<br/>
+                    🔢 <strong>Account No:</strong> 8001234567890<br/>
+                    🔀 <strong>Branch:</strong> Colombo 03<br/><br/>
+                    <em>After placing the order, upload the bank slip. Your order is NOT confirmed until admin verifies it.</em>
+                </div>
+
+                <div class="form-group" style="margin-top:14px;">
+                    <label class="form-label">Upload Payment Slip (jpg/png/pdf)</label>
+                    <input class="form-input" type="file" id="slipFile" accept=".jpg,.jpeg,.png,.pdf"/>
+                </div>
+            </div>
+
+            <button class="pay-btn" type="button" onclick="placeOrder()">
+                🔒 &nbsp;Place Order <span id="payBtnAmount"></span>
+            </button>
+
+            <div class="tiny-note">
+                Note: For a real system, totals and stock will be verified again by the server.
+            </div>
+        </div>
+
+        <!-- Processing -->
+        <div class="processing-screen" id="processingScreen">
+            <div class="spinner"></div>
+            <h3 class="processing-title">Processing...</h3>
+            <p class="processing-sub">Please do not close this window.</p>
+        </div>
+
+        <!-- Result -->
+        <div class="success-screen" id="resultScreen">
+            <div class="success-icon" id="resultIcon">✅</div>
+            <h2 id="resultTitle">Order Placed!</h2>
+            <p id="resultMsg">Your request has been received.</p>
+            <div class="order-id-badge" id="orderIdBadge">ORDER #ZF-000000</div>
+            <p class="result-note" id="resultNote">A confirmation has been sent to your email.</p>
+            <button class="checkout-btn" style="margin-top:20px;width:100%" onclick="openFeedback()">★ Leave Feedback</button>
+            <button class="checkout-btn" style="margin-top:10px;width:100%;background:transparent;color:var(--text);border:1px solid var(--border);" onclick="closePayment()">Continue Shopping</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== FEEDBACK MODAL ===================== -->
+<div class="modal-overlay" id="feedbackModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Rate Your Experience</div>
+            <button class="modal-close" onclick="closeFeedback()">✕</button>
+        </div>
+        
+        <div style="padding: 20px;">
+            <p style="color:var(--muted); margin-top:0;">Your feedback helps us improve our textiles and service.</p>
+            
+            <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                <div class="form-group">
+                    <label class="form-label">Rating</label>
+                    <select class="form-input" id="fbRating" required>
+                        <option value="5" selected>★★★★★ - Excellent</option>
+                        <option value="4">★★★★☆ - Good</option>
+                        <option value="3">★★★☆☆ - Average</option>
+                        <option value="2">★★☆☆☆ - Poor</option>
+                        <option value="1">★☆☆☆☆ - Terrible</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-top:15px;">
+                    <label class="form-label">Write your review</label>
+                    <textarea class="form-input" id="fbText" rows="4" required placeholder="The fabric quality was fantastic..."></textarea>
+                </div>
+                
+                <button class="checkout-btn" type="submit" style="margin-top:10px; width:100%;">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <div class="brand-logo" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold), var(--gold2)); font-size: 24px; box-shadow: 0 4px 15px var(--gold-glow);">🧵</div>
+          <div class="brand-name" style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; color: var(--gold2); margin-left: 10px;">ZEE FASHION</div>
+        </div>
+        <p class="footer-desc">Your premier destination for high-quality fabrics. We curate the finest textiles from around the world for creators, designers, and DIY enthusiasts.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn">f</a>
+          <a href="#" class="social-btn">i</a>
+          <a href="#" class="social-btn">p</a>
+          <a href="#" class="social-btn">y</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <ul>
+          <li><a href="/pages/products.html">Shop</a></li>
+          <li><a href="/pages/cart.html">Cart</a></li>
+          <li><a href="/pages/login.html">Login</a></li>
+          <li><a href="/pages/register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Shipping & Delivery</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Details</h4>
+        <div class="contact-item">
+          <span>🏬</span>
+          <div class="contact-details">
+            <strong>Shop Name</strong>
+            <div>ZEE FASHION</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>👤</span>
+          <div class="contact-details">
+            <strong>Owner Name</strong>
+            <div>M.Z Aathif</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>📞</span>
+          <div class="contact-details">
+            <strong>Contact</strong>
+            <div>0777718414</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>✉️</span>
+          <div class="contact-details">
+            <strong>Email</strong>
+            <div>mohammedaathif269@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ZEE FASHION. All rights reserved.</p>
+    </div>
+  </footer>
+
+<script src="/js/authcheck.js"></script>
+<script src="/js/cart.js"></script>
+</body>
+</html>
