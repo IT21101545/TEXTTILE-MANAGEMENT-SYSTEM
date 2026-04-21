@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZEE FASHION — Login</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/user.css">
+  <style>
+    /* Specific overrides for the cohesive new design */
+    body {
+        background-color: #F6F3EE; 
+    }
+    .auth-card-new {
+        background: #fff;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin: 40px auto;
+        max-width: 480px;
+    }
+    .auth-head-new {
+        margin-bottom: 24px;
+        border-bottom: 1px solid #f0ebe1;
+        padding-bottom: 16px;
+        text-align: center;
+    }
+    .auth-head-new h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 32px;
+        font-weight: 800;
+        color: #312A25;
+        margin-bottom: 4px;
+    }
+    .auth-head-new p {
+        color: #8C847A;
+        font-size: 15px;
+    }
+    
+    .grid-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    .grid-field label {
+        color: #584F46;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+    .input-new {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid #EBE4D9;
+        background: #F8F5F1;
+        color: #312A25;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+    .input-new:focus {
+        border-color: #A07148;
+        background: #fff;
+    }
+    .input-new.filled-blue {
+        background: #EEF6FF;
+        border-color: #D3E4F5;
+        color: #1a1a1a;
+    }
+
+    .btn-brown {
+        background: #9D6F46;
+        color: #ffffff;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+        transition: opacity 0.2s;
+        margin-top: 10px;
+    }
+    .btn-brown:hover { opacity: 0.9; }
+  </style>
+</head>
+
+<body>
+  <!-- Top Bar -->
+  <header class="topbar" style="background:#1C1A18; border-bottom: none; padding: 12px 24px;">
+    <div class="brand">
+      <div class="brand-logo" style="background: linear-gradient(135deg, #d4a77e, #a26b45); border-radius: 12px; position:relative; overflow:hidden;">
+        <span style="font-size: 18px; position:relative; z-index: 2;">🔐</span>
+      </div>
+      <div>
+        <div class="brand-name" style="color:#C9A84C; font-family:'Playfair Display',serif; font-size: 20px; letter-spacing: 1px;">ZEE FASHION</div>
+        <div class="brand-sub" style="color: #9C9692; font-size:12px; letter-spacing:0.5px;">User & Authentication</div>
+      </div>
+    </div>
+
+    <nav class="global-nav">
+      <a href="/pages/login.html" class="active" style="color: #F8D98C; border: 1px solid #786438; background:#2A251C;">Login</a>
+      <a href="/pages/register.html" style="color: #E0DCD8;">Register</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="authArea">
+      <div class="auth-card-new">
+        <div class="auth-head-new">
+          <h2 id="authTitle">Login Now</h2>
+          <p id="authSub">Securely sign in to your administrative dashboard.</p>
+        </div>
+
+        <form id="loginForm">
+          <div class="grid-field">
+            <label>Email Address</label>
+            <input class="input-new filled-blue" id="loginEmail" type="email" required placeholder="admin@zeefashion.lk">
+          </div>
+          <div class="grid-field" style="margin-bottom: 10px;">
+            <label>Password</label>
+            <input class="input-new filled-blue" id="loginPassword" type="password" required placeholder="••••••••">
+          </div>
+
+          <div class="row-between" style="margin-bottom: 20px;">
+            <label class="check">
+              <input type="checkbox" id="rememberMe">
+              <span style="font-weight:500;">Remember me</span>
+            </label>
+            <button class="link" type="button" id="goForgot" style="color:#9D6F46;">Forgot password?</button>
+          </div>
+
+          <button class="btn-brown" type="submit">Login Now</button>
+
+          <div class="auth-switch" style="margin-top: 20px;">
+            <span class="muted">Need an account?</span>
+            <a class="link" href="/pages/register.html" style="color:#9D6F46;">Create one here</a>
+          </div>
+        </form>
+
+        <form id="forgotForm" style="display:none;">
+          <div class="grid-field">
+            <label>Email</label>
+            <input class="input-new" id="forgotEmail" type="email" required placeholder="Enter your email">
+          </div>
+
+          <button class="btn-brown" type="submit">Send Reset Link</button>
+
+          <div class="auth-switch" style="margin-top: 20px;">
+            <span class="muted">Remember password?</span>
+            <button class="link" type="button" id="goLogin" style="color:#9D6F46;">Back to login</button>
+          </div>
+        </form>
+
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <div class="brand-logo" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold), var(--gold2)); font-size: 24px; box-shadow: 0 4px 15px var(--gold-glow);">🧵</div>
+          <div class="brand-name" style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; color: var(--gold2); margin-left: 10px;">ZEE FASHION</div>
+        </div>
+        <p class="footer-desc">Your premier destination for high-quality fabrics. We curate the finest textiles from around the world for creators, designers, and DIY enthusiasts.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn">f</a>
+          <a href="#" class="social-btn">i</a>
+          <a href="#" class="social-btn">p</a>
+          <a href="#" class="social-btn">y</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <ul>
+          <li><a href="/pages/products.html">Shop</a></li>
+          <li><a href="/pages/cart.html">Cart</a></li>
+          <li><a href="/pages/login.html">Login</a></li>
+          <li><a href="/pages/register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Shipping & Delivery</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Details</h4>
+        <div class="contact-item">
+          <span>🏬</span>
+          <div class="contact-details">
+            <strong>Shop Name</strong>
+            <div>ZEE FASHION</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>👤</span>
+          <div class="contact-details">
+            <strong>Owner Name</strong>
+            <div>M.Z Aathif</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>📞</span>
+          <div class="contact-details">
+            <strong>Contact</strong>
+            <div>0777718414</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>✉️</span>
+          <div class="contact-details">
+            <strong>Email</strong>
+            <div>mohammedaathif269@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ZEE FASHION. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/js/login.js"></script>
+</body>
+</html>

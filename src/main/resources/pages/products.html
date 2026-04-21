@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ZEE FASHION — Shop Products</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/user.css">
+    <link rel="stylesheet" href="/css/products.css">
+</head>
+
+<body>
+<header class="topbar">
+    <div class="brand">
+        <div class="brand-logo">🧵</div>
+        <div>
+            <div class="brand-name">ZEE FASHION</div>
+            <div class="brand-sub">Premium Textiles Catalog</div>
+        </div>
+    </div>
+
+    <!-- The exact global-nav from dashboard.html, but with Products highlighted (or active) -->
+    <nav class="global-nav" id="globalNav">
+        <a href="/pages/products.html" class="active" data-role="CUSTOMER">Shop</a>
+        <a href="/pages/inventory.html" data-role="INVENTORY_ADMIN">Inventory</a>
+        <a href="/pages/cart.html" data-role="CUSTOMER">Cart</a>
+        <a href="/pages/order.html" data-role="STAFF">Orders</a>
+        <a href="/pages/sales.html" data-role="SALES_MANAGER">Sales</a>
+        <a href="/pages/sup.html" data-role="INVENTORY_ADMIN">Suppliers</a>
+        <a href="/pages/users.html" data-role="ADMIN">Users</a>
+        <a href="/pages/login.html" id="navLogin">Login</a>
+    </nav>
+
+    <div class="topbar-actions">
+        <div class="notif-wrapper" id="notifWrapper">
+            <button class="notif-btn" id="notifBtn">
+                🔔
+                <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+            </button>
+            <div class="notif-panel" id="notifPanel">
+                <div class="notif-header">
+                    Notifications
+                </div>
+                <div class="notif-list" id="notifList">
+                    <!-- Dynamic -->
+                    <div class="notif-empty">No new notifications</div>
+                </div>
+            </div>
+        </div>
+        <a href="/pages/cart.html" class="btn primary" style="text-decoration:none;">🛒 Cart (<span id="cartCount">0</span>)</a>
+        <button class="btn ghost" onclick="logoutApp()" style="margin-left: 10px;">Logout</button>
+    </div>
+</header>
+
+<div class="hero">
+    <h1>Our Premium Collection</h1>
+    <p>Discover hand-woven silks, pure cottons, and rich textiles crafted for perfection. Browse our catalog and add the finest materials to your cart securely.</p>
+</div>
+
+<main class="shop-container">
+    <!-- Left Sidebar for Filters -->
+    <aside class="filters">
+        <h3>Filters</h3>
+        <div class="filter-group">
+            <label>Search Collection</label>
+            <input type="text" id="catalogSearch" class="filter-input" placeholder="Search fabrics...">
+        </div>
+        <div class="filter-group">
+            <label>Fabric Category</label>
+            <select id="catalogCategory" class="filter-input">
+                <option value="all">All Fabrics</option>
+                <!-- Dynamic categories populated by products.js -->
+            </select>
+        </div>
+        <div class="filter-group" style="padding-top:10px; border-top:1px solid var(--border);">
+            <div class="muted" style="font-size:0.85rem; line-height:1.4;">
+                <p>Welcome to the <strong>Customer Storefront</strong>.</p>
+                <p>Purchases are synchronized to the global checkout cart. For demo purposes, backend integrations will be enabled when available.</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Product Area -->
+    <div class="catalog">
+        <div class="product-grid" id="productGrid">
+            <!-- Rendered by products.js -->
+        </div>
+    </div>
+</main>
+
+<!-- Product Detail Modal -->
+<div class="modal-overlay" id="productModal">
+    <div class="modal-container">
+        <button class="modal-close" onclick="closeProductModal()">✕</button>
+        <div class="modal-content">
+            <div class="product-detail-grid">
+                <div class="detail-image-box" id="modalProductImage">
+                    <!-- Dynamic -->
+                </div>
+                <div class="detail-info-box">
+                    <div id="modalProductCategory" class="product-category">CATEGORY</div>
+                    <h2 id="modalProductName" class="product-name" style="font-size: 2rem;">Product Name</h2>
+                    <p id="modalProductDescription" class="product-meta" style="font-size: 1rem; margin: 15px 0;">Product Description goes here...</p>
+                    <div id="modalProductStock" style="margin-bottom: 20px;">STOCK STATUS</div>
+                    <div class="product-footer" style="justify-content: flex-start; gap: 20px;">
+                        <div id="modalProductPrice" class="product-price" style="font-size: 1.5rem;">Rs. 0.00/m</div>
+                        <button id="modalAddBtn" class="btn-add" style="padding: 12px 24px;">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-section">
+                <h3 class="section-title">Customer Feedback</h3>
+                
+                <div class="feedback-layout">
+                    <!-- Left: Submit Feedback -->
+                    <div class="feedback-form-container">
+                        <h4>Leave a Review</h4>
+                        <form id="productFeedbackForm" onsubmit="handleProductFeedback(event)">
+                            <div class="rating-input">
+                                <label>Your Rating</label>
+                                <select id="fbRating" class="filter-input">
+                                    <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                                    <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                                    <option value="3">⭐⭐⭐ (3/5)</option>
+                                    <option value="2">⭐⭐ (2/5)</option>
+                                    <option value="1">⭐ (1/5)</option>
+                                </select>
+                            </div>
+                            <div class="text-input">
+                                <label>Message</label>
+                                <textarea id="fbText" class="filter-input" style="height: 100px; resize: none;" placeholder="Share your experience with this fabric..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-add" style="width: 100%;">Submit Feedback</button>
+                        </form>
+                    </div>
+
+                    <!-- Right: Feedback List -->
+                    <div class="feedback-list-container">
+                        <div id="modalFeedbackList">
+                            <!-- Rendered by products.js -->
+                            <div class="muted">Loading feedback...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <div class="brand-logo" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold), var(--gold2)); font-size: 24px; box-shadow: 0 4px 15px var(--gold-glow);">🧵</div>
+          <div class="brand-name" style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; color: var(--gold2); margin-left: 10px;">ZEE FASHION</div>
+        </div>
+        <p class="footer-desc">Your premier destination for high-quality fabrics. We curate the finest textiles from around the world for creators, designers, and DIY enthusiasts.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn">f</a>
+          <a href="#" class="social-btn">i</a>
+          <a href="#" class="social-btn">p</a>
+          <a href="#" class="social-btn">y</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <ul>
+          <li><a href="/pages/products.html">Shop</a></li>
+          <li><a href="/pages/cart.html">Cart</a></li>
+          <li><a href="/pages/login.html">Login</a></li>
+          <li><a href="/pages/register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Shipping & Delivery</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Details</h4>
+        <div class="contact-item">
+          <span>🏬</span>
+          <div class="contact-details">
+            <strong>Shop Name</strong>
+            <div>ZEE FASHION</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>👤</span>
+          <div class="contact-details">
+            <strong>Owner Name</strong>
+            <div>M.Z Aathif</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>📞</span>
+          <div class="contact-details">
+            <strong>Contact</strong>
+            <div>0777718414</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>✉️</span>
+          <div class="contact-details">
+            <strong>Email</strong>
+            <div>mohammedaathif269@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ZEE FASHION. All rights reserved.</p>
+    </div>
+  </footer>
+
+<!-- Unified Authentication Check Script -->
+<script src="/js/authcheck.js"></script>
+
+<script src="/js/products.js"></script>
+</body>
+</html>

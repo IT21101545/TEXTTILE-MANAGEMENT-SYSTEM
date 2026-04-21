@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZEE FASHION — Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/user.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">🧵</div>
+      <div>
+        <div class="brand-name">ZEE FASHION</div>
+        <div class="brand-sub">Dashboard & Analytics</div>
+      </div>
+    </div>
+
+    <nav class="global-nav" id="globalNav">
+      <a href="/pages/products.html" data-role="CUSTOMER">Shop</a>
+      <a href="/pages/inventory.html" data-role="INVENTORY_ADMIN">Inventory</a>
+      <a href="/pages/cart.html" data-role="CUSTOMER">Cart</a>
+      <a href="/pages/order.html" data-role="STAFF">Orders</a>
+      <a href="/pages/sales.html" data-role="SALES_MANAGER">Sales</a>
+      <a href="/pages/sup.html" data-role="INVENTORY_ADMIN">Suppliers</a>
+      <a href="/pages/users.html" data-role="ADMIN">Users</a>
+      <a href="/pages/login.html" id="navLogin">Login</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <div class="user-pill" id="userPill">
+        <span id="pillName">User</span>
+        <span class="role" id="pillRole">ROLE</span>
+      </div>
+      <button class="btn ghost" id="btnLogout">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+      <div style="padding: 100px 20px; text-align:center;">
+        <h2>Redirecting to Management...</h2>
+        <p class="muted">You are being redirected to your appropriate management page.</p>
+      </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <div class="brand-logo" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold), var(--gold2)); font-size: 24px; box-shadow: 0 4px 15px var(--gold-glow);">🧵</div>
+          <div class="brand-name" style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; color: var(--gold2); margin-left: 10px;">ZEE FASHION</div>
+        </div>
+        <p class="footer-desc">Your premier destination for high-quality fabrics. We curate the finest textiles from around the world for creators, designers, and DIY enthusiasts.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn">f</a>
+          <a href="#" class="social-btn">i</a>
+          <a href="#" class="social-btn">p</a>
+          <a href="#" class="social-btn">y</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <ul>
+          <li><a href="/pages/products.html">Shop</a></li>
+          <li><a href="/pages/cart.html">Cart</a></li>
+          <li><a href="/pages/login.html">Login</a></li>
+          <li><a href="/pages/register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Shipping & Delivery</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Details</h4>
+        <div class="contact-item">
+          <span>🏬</span>
+          <div class="contact-details">
+            <strong>Shop Name</strong>
+            <div>ZEE FASHION</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>👤</span>
+          <div class="contact-details">
+            <strong>Owner Name</strong>
+            <div>M.Z Aathif</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>📞</span>
+          <div class="contact-details">
+            <strong>Contact</strong>
+            <div>0777718414</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>✉️</span>
+          <div class="contact-details">
+            <strong>Email</strong>
+            <div>mohammedaathif269@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ZEE FASHION. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/js/authcheck.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

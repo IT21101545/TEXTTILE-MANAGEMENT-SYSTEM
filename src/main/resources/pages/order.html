@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZEE FASHION — Orders & Customers</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/user.css"/>
+</head>
+  <link rel="stylesheet" href="/css/user.css"/>
+  <link rel="stylesheet" href="/css/order.css"/>
+</head>
+<body>
+
+<!-- Announcement Bar -->
+<div class="announcement-bar">
+    <div class="announcement-container">
+        <span>🎁 BECOME A VIP MEMBER</span>
+        <span>🚚 FREE SHIPPING Rs. 5000+</span>
+        <span>↩️ RETURNS</span>
+        <span>⭐ TRUSTED BY THOUSANDS! RATED 4.8/5 FROM 9000+ REVIEWS</span>
+    </div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">👕</div>
+    <div>
+      <div class="brand-name">ZEE FASHION</div>
+      <div class="brand-sub">Order & Customer Management</div>
+    </div>
+  </div>
+
+  <nav class="global-nav">
+    <a href="/pages/order.html" class="active">ORDERS</a>
+  </nav>
+
+  <div class="topbar-actions">
+    <button class="btn ghost small" onclick="logoutApp()">Logout</button>
+  </div>
+</header>
+
+<main class="container">
+  <header class="dashboard-header">
+    <h1>Order & Customer Management</h1>
+    <p class="muted">Streamlined fulfillment, customer relationship management, and sales monitoring.</p>
+    <div class="header-utility">
+        <span class="date" id="currentDate">Saturday, March 28, 2026</span>
+        <button class="btn-refresh" onclick="location.reload()">🔄 Refresh</button>
+    </div>
+  </header>
+
+  <section class="welcome-banner">
+    <div class="banner-content">
+        <h2>Welcome, Order Manager!</h2>
+        <p>Track orders, manage customers, and monitor delivery statuses.</p>
+    </div>
+    <div class="banner-icon">📦</div>
+  </section>
+
+  <!-- KPI SECTION -->
+  <section class="kpi-grid">
+    <div class="card kpi">
+      <div class="kpi-icon blue">📄</div>
+      <div class="kpi-info">
+        <div class="kpi-label">Total Orders</div>
+        <div class="kpi-val" id="kpiOrders">0</div>
+        <div class="kpi-meta muted">All time</div>
+      </div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-icon green">✅</div>
+      <div class="kpi-info">
+        <div class="kpi-label">Completed</div>
+        <div class="kpi-val" id="kpiDelivered">0</div>
+        <div class="kpi-meta muted">Successfully fulfilled</div>
+      </div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-icon yellow">⏳</div>
+      <div class="kpi-info">
+        <div class="kpi-label">Pending</div>
+        <div class="kpi-val" id="kpiPending">0</div>
+        <div class="kpi-meta muted">Awaiting processing</div>
+      </div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-icon purple">👥</div>
+      <div class="kpi-info">
+        <div class="kpi-label">Total Customers</div>
+        <div class="kpi-val" id="kpiCustomers">0</div>
+        <div class="kpi-meta muted">Registered</div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="tabs-modern">
+    <button class="tab-m active" data-tab="orders">📋 Orders</button>
+    <button class="tab-m" data-tab="customers">👥 Customers</button>
+    <button class="tab-m" data-tab="tracking">📡 Tracking</button>
+  </nav>
+
+  <!-- ORDERS PANEL -->
+  <section class="panel-modern show" id="tab-orders">
+    <div class="card section-card">
+      <div class="card-header">
+        <div class="title-with-icon">
+            <span class="icon gray">🖼️</span>
+            <h3>Recent Orders</h3>
+        </div>
+      </div>
+
+      <div class="filters-modern">
+        <div class="search-box">
+             <span class="search-icon">🔍</span>
+             <input type="text" id="orderSearch" placeholder="Search by order ID, customer...">
+        </div>
+        <select class="input" id="statusFilter" style="width: 150px;">
+          <option value="all">All Statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="PROCESSING">Processing</option>
+          <option value="DELIVERED">Completed</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+        <button class="btn ghost small" id="btnExport">Export CSV</button>
+      </div>
+
+      <div class="table-wrap-modern">
+        <table class="table-modern" id="ordersTable">
+          <thead>
+            <tr>
+              <th>ORDER ID</th>
+              <th>CUSTOMER</th>
+              <th>ITEMS</th>
+              <th>TOTAL</th>
+              <th>STATUS</th>
+              <th>DATE</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody><!-- JS Populated --></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMERS PANEL -->
+  <section class="panel-modern" id="tab-customers">
+    <div class="card section-card">
+        <div class="card-header">
+            <div class="title-with-icon">
+                <span class="icon purple">👥</span>
+                <h3>Customer Directory</h3>
+            </div>
+        </div>
+
+        <div class="filters-modern">
+            <div class="search-box full">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="customerSearch" placeholder="Search customers...">
+            </div>
+        </div>
+
+        <div class="customer-grid" id="customerGrid">
+            <!-- JS Populated (Cards) -->
+        </div>
+    </div>
+  </section>
+
+  <!-- TRACKING PANEL -->
+  <section class="panel-modern" id="tab-tracking">
+    <div class="card section-card">
+        <div class="card-header">
+            <div class="title-with-icon">
+                <span class="icon blue">📡</span>
+                <h3>Instant Order Tracking</h3>
+            </div>
+        </div>
+
+        <div class="tracking-container">
+            <div class="card tracking-search-card">
+                <p class="muted" style="margin-bottom:15px; font-size:13px;">Enter your Order ID to see real-time status and delivery timeline.</p>
+                <form class="form-tracking" id="trackForm">
+                    <div class="search-box tracking">
+                        <span class="search-icon">🆔</span>
+                        <input type="text" id="trackOrderId" required placeholder="Enter Order ID (e.g. 101)">
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                        <button class="btn gold" style="flex:1;" type="submit">Track Order</button>
+                        <button class="btn ghost" type="button" id="btnTrackClear">Clear</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card tracking-result-card" id="trackingResult">
+                <div id="trackingEmpty" class="tracking-placeholder">
+                    <div class="big-emoji">🔎</div>
+                    <h4>Waiting for ID</h4>
+                    <p class="muted">Your order timeline will appear here.</p>
+                </div>
+
+                <div id="trackingBody" style="display:none;">
+                    <div class="trk-header">
+                        <div class="trk-title" id="trkOrderTitle">Order #—</div>
+                        <div class="trk-meta" id="trkCustomer">Customer Name</div>
+                        <div class="trk-price" id="trkTotal">Rs. 0.00</div>
+                    </div>
+                    <div class="timeline-modern" id="timeline">
+                        <!-- JS Controlled -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </section>
+</main>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div>
+        <h3 id="omTitle">New Order</h3>
+        <p class="muted" id="omSub">Draft a new customer order for processing.</p>
+      </div>
+      <button class="icon-btn" id="btnCloseOrderModal">✕</button>
+    </div>
+
+    <form class="form" id="orderForm">
+      <input type="hidden" id="omId">
+
+      <div class="modal-layout">
+        <div class="modal-col">
+            <div class="card inner">
+                <div class="row">
+                    <div class="field">
+                        <label>Select Customer</label>
+                        <select class="input" id="omCustomer" required>
+                            <option value="">— Choose Customer —</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="field">
+                        <label>Payment Method</label>
+                        <select class="input" id="omPay">
+                            <option value="COD" selected>Cash on Delivery (COD)</option>
+                            <option value="BANK">Bank Transfer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Shipping Address</label>
+                    <textarea class="input" id="omAddress" rows="3" placeholder="Address from customer record..." required></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-col">
+            <div class="card inner">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h4 style="margin:0;">Order Items</h4>
+                    <button class="btn gold small" type="button" id="btnAddItemRow">+ Add Item</button>
+                </div>
+
+                <div class="order-items-wrap">
+                    <table class="table-items" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th style="width:80px;">Qty</th>
+                                <th style="width:100px;">Price</th>
+                                <th style="width:40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="omItemsBody">
+                            <!-- JS Dyn rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="order-summary-box">
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <span id="omSubtotal">Rs. 0.00</span>
+                    </div>
+                    <div class="summary-line grand">
+                        <span>Total Amount</span>
+                        <strong id="omGrandTotal">Rs. 0.00</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="actions" style="border-top: 1px solid #eee; padding-top: 20px;">
+        <button class="btn gold" type="submit" id="btnSaveOrder" style="padding: 12px 30px;">Create Order</button>
+        <button class="btn ghost" type="button" id="btnCancelOrder">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ORDER VIEW MODAL (history + timeline) -->
+<div class="modal-overlay" id="orderViewModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="ovTitle">Order Details</h3>
+        <p class="muted" id="ovSub">Order history and status timeline.</p>
+      </div>
+      <button class="icon-btn" id="btnCloseOrderView">✕</button>
+    </div>
+
+    <div class="view-grid">
+      <div class="card inner">
+        <h4>Summary</h4>
+        <div class="kv"><span class="muted">Order ID</span><strong id="ovId">—</strong></div>
+        <div class="kv"><span class="muted">Date</span><strong id="ovDate">—</strong></div>
+        <div class="kv"><span class="muted">Customer</span><strong id="ovCustomer">—</strong></div>
+        <div class="kv"><span class="muted">Contact</span><strong id="ovContact">—</strong></div>
+        <div class="kv"><span class="muted">Payment</span><strong id="ovPay">—</strong></div>
+        <div class="kv"><span class="muted">Total</span><strong id="ovTotal">—</strong></div>
+        <div class="kv"><span class="muted">Address</span><strong id="ovAddress">—</strong></div>
+        
+        <div id="ovSlipSection" style="margin-top: 20px; display: none;">
+          <h4 style="margin-bottom: 8px; font-size: 13px; color: var(--gold2); display: flex; align-items: center; gap: 6px;">
+            <span>📸</span> Bank Deposit Slip
+          </h4>
+          <div id="ovSlipImageOuter" style="border: 2px dashed var(--border); border-radius: 12px; overflow: hidden; background: #fdfdfd; cursor: pointer;">
+             <!-- Image injected by JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="card inner">
+        <h4>Items</h4>
+        <div id="ovItems"></div>
+        <div style="margin-top:12px;">
+          <h4>Status Timeline</h4>
+          <div class="timeline" id="ovTimeline"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:12px;">
+      <select class="input" id="ovNewStatus" style="max-width:240px;">
+        <option value="PENDING">PENDING</option>
+        <option value="PROCESSING">PROCESSING</option>
+        <option value="SHIPPED">SHIPPED</option>
+        <option value="DELIVERED">DELIVERED</option>
+        <option value="CANCELLED">CANCELLED</option>
+      </select>
+      <button class="btn primary" id="btnUpdateStatus">Update Status</button>
+    </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOMER MODAL -->
+<div class="modal-overlay" id="customerModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="cmTitle">New Customer</h3>
+        <p class="muted" id="cmSub">Create a customer record.</p>
+      </div>
+      <button class="icon-btn" id="btnCloseCustomerModal">✕</button>
+    </div>
+
+    <form class="form" id="customerForm">
+      <input type="hidden" id="cmId">
+
+      <div class="row">
+        <div class="field">
+          <label>First Name</label>
+          <input class="input" id="cmFirst" required placeholder="Kamal">
+        </div>
+        <div class="field">
+          <label>Last Name</label>
+          <input class="input" id="cmLast" required placeholder="Perera">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Email</label>
+          <input class="input" id="cmEmail" type="email" required placeholder="kamal@email.com">
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input class="input" id="cmPhone" required placeholder="+94 77 123 4567">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Address</label>
+        <input class="input" id="cmAddress" required placeholder="No. 12, Galle Road, Colombo 03">
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="submit" id="btnSaveCustomer">Save</button>
+        <button class="btn ghost2" type="button" id="btnCancelCustomer">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <div class="brand-logo" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold), var(--gold2)); font-size: 24px; box-shadow: 0 4px 15px var(--gold-glow);">🧵</div>
+          <div class="brand-name" style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; color: var(--gold2); margin-left: 10px;">ZEE FASHION</div>
+        </div>
+        <p class="footer-desc">Your premier destination for high-quality fabrics. We curate the finest textiles from around the world for creators, designers, and DIY enthusiasts.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn">f</a>
+          <a href="#" class="social-btn">i</a>
+          <a href="#" class="social-btn">p</a>
+          <a href="#" class="social-btn">y</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <ul>
+          <li><a href="/pages/products.html">Shop</a></li>
+          <li><a href="/pages/cart.html">Cart</a></li>
+          <li><a href="/pages/login.html">Login</a></li>
+          <li><a href="/pages/register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Shipping & Delivery</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Details</h4>
+        <div class="contact-item">
+          <span>🏬</span>
+          <div class="contact-details">
+            <strong>Shop Name</strong>
+            <div>ZEE FASHION</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>👤</span>
+          <div class="contact-details">
+            <strong>Owner Name</strong>
+            <div>M.Z Aathif</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>📞</span>
+          <div class="contact-details">
+            <strong>Contact</strong>
+            <div>0777718414</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>✉️</span>
+          <div class="contact-details">
+            <strong>Email</strong>
+            <div>mohammedaathif269@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ZEE FASHION. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/js/authcheck.js"></script>
+  <script src="/js/order.js"></script>
+</body>
+</html>

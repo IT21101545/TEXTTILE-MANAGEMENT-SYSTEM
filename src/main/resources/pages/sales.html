@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZEE FASHION — Sales & Feedback</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/user.css" />
+  <link rel="stylesheet" href="/css/sales.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- PDF Generation Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    /* Ratings Styling */
+    .rating-stars {
+      color: #F59E0B;
+      font-size: 1.1rem;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-badge.pending {
+      background: #FEF3C7;
+      color: #D97706;
+    }
+
+    .status-badge.approved {
+      background: #D1FAE5;
+      color: #059669;
+    }
+
+    .review-text {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Premium Navigation Cards */
+    .premium-card {
+      background: #fff !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 20px !important;
+      padding: 30px !important;
+      text-align: left !important;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 20px !important;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .premium-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+      border-color: var(--gold) !important;
+    }
+
+    .card-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+
+    .gradient-green { background: linear-gradient(135deg, #10b981, #34d399); color: #fff; }
+    .gradient-purple { background: linear-gradient(135deg, #8b5cf6, #a78bfa); color: #fff; }
+
+    .premium-card h4 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 1.15rem;
+      font-family: 'DM Sans', sans-serif;
+    }
+    
+    .small-hint {
+      display: inline-block;
+      margin-top: 5px;
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">🧵</div>
+      <div>
+        <div class="brand-name">ZEE FASHION</div>
+        <div class="brand-sub">Sales Analytics & Feedback</div>
+      </div>
+    </div>
+
+    <nav class="global-nav" id="globalNav">
+      <a href="#" class="active" onclick="showModule('dashboard'); return false;" id="navSales" style="text-transform: uppercase;">Sales</a>
+      <a href="#" onclick="showModule('feedback'); return false;" id="navFeedback" style="text-transform: uppercase;">Feedback</a>
+      <a href="/pages/login.html" id="navLogin">Login</a>
+    </nav>
+
+    <div style="display: flex; align-items: center;">
+      <div class="notif-wrapper" onclick="showModule('feedback')" style="cursor:pointer; position:relative; margin-right:15px; display:flex; align-items:center;">
+        <span style="font-size: 1.4rem;">🔔</span>
+        <span id="notifBadge" class="notif-badge" style="display:none;">0</span>
+      </div>
+      <div class="user-pill" id="userPill" style="display:none;">
+        <span id="pillName">User</span>
+        <span class="role" id="pillRole">ROLE</span>
+      </div>
+      <button class="btn ghost small" onclick="logoutApp()" style="margin-left: 10px;">Logout</button>
+    </div>
+  </header>
+
+  <main class="container" id="dashboardView">
+    <!-- Dashboard Header -->
+    <div class="dash-header">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="muted">Overview of system activity and performance</p>
+      </div>
+      <div class="dash-meta">
+        <span id="currentDate">Tuesday, March 24, 2026</span>
+        <button class="btn ghost small" onclick="refreshDashboard()"><span class="icon">↻</span> Refresh</button>
+        <button class="btn primary small" onclick="downloadPDFReport()" id="btnDownloadReport">
+          <span class="icon">📥</span> Download Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div class="welcome-content">
+        <h2>Welcome, Sales Manager!</h2>
+        <p>Track sales performance and customer feedback.</p>
+      </div>
+      <div class="welcome-icon">📈</div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">💰</div>
+        <div class="stat-info">
+          <label>Total Sales</label>
+          <div class="value" id="statTotalSales">Rs. 0.00</div>
+          <span class="sub">All time</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">📅</div>
+        <div class="stat-info">
+          <label>Today's Sales</label>
+          <div class="value" id="statTodaySales">Rs. 0.00</div>
+          <span class="sub" id="statTodayLabel">Mar 24</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">⭐</div>
+        <div class="stat-info">
+          <label>Avg Rating</label>
+          <div class="value" id="statAvgRating">0.0</div>
+          <span class="sub" id="statReviewCount">From 0 reviews</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">📦</div>
+        <div class="stat-info">
+          <label>Total Products</label>
+          <div class="value" id="statTotalProducts">0</div>
+          <span class="sub">In stock</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="card-head">
+          <h3><span class="icon">📊</span> Monthly Sales</h3>
+          <select class="small-select" id="salesYearFilter">
+            <option>2026</option>
+          </select>
+        </div>
+        <div class="chart-container">
+          <canvas id="monthlySalesChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="card-head">
+          <h3><span class="icon"></span> Rating Distribution</h3>
+        </div>
+        <div class="chart-container pie">
+          <canvas id="ratingDistributionChart"></canvas>
+        </div>
+      </div>
+    </div>
+    
+
+
+    <!-- Recent Data Tables -->
+    <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 30px;">
+      
+      <!-- Recent Sales -->
+      <div class="card">
+        <div class="card-head" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border);">
+          <h3 style="margin: 0;"><span class="icon">🛒</span> Recent Sales</h3>
+          <button class="btn ghost small" onclick="showModule('sales')">View All →</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table" style="width: 100%; border-collapse: collapse;">
+            <thead style="background: var(--ink); color: #fff;">
+              <tr>
+                <th style="padding: 12px; text-align: left;">SALE ID</th>
+                <th style="padding: 12px; text-align: left;">ORDER ID</th>
+                <th style="padding: 12px; text-align: left;">AMOUNT</th>
+                <th style="padding: 12px; text-align: left;">DATE</th>
+              </tr>
+            </thead>
+            <tbody id="recentSalesBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Full Feedback Management Module -->
+  <main class="container" id="feedbackModule" style="display:none;">
+    <div class="dash-header">
+      <div>
+        <h1 class="page-title">Customer Feedback</h1>
+        <p class="muted">Listen to what your customers are saying — view, reply, and manage feedback</p>
+      </div>
+      <div class="dash-meta">
+        <button class="btn ghost small" onclick="showModule('dashboard')">← Back to Dashboard</button>
+      </div>
+    </div>
+
+    <!-- Feedback Summary Cards -->
+    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+      <div class="stat-card" style="padding: 20px; text-align: left; background: #fff;">
+        <label style="font-weight: 600; color: #555;">Average Rating</label>
+        <div class="value" id="fbAvgRating" style="font-size: 1.8rem; margin: 10px 0;">0.0</div>
+        <div class="rating-stars" id="fbAvgStars">☆☆☆☆☆</div>
+      </div>
+      <div class="stat-card" style="padding: 20px; text-align: left; background: #fff;">
+        <label style="font-weight: 600; color: #555;">Total Reviews</label>
+        <div class="value" id="fbTotalReviews" style="font-size: 1.8rem; margin: 10px 0;">0</div>
+      </div>
+      <div class="stat-card" style="padding: 20px; text-align: left; background: #fff;">
+        <label style="font-weight: 600; color: #555;">Positive Reviews</label>
+        <div class="value" id="fbPosReviews" style="font-size: 1.8rem; margin: 10px 0;">0</div>
+        <span class="sub">(4-5 stars)</span>
+      </div>
+      <div class="stat-card" style="padding: 20px; text-align: left; background: #fff;">
+        <label style="font-weight: 600; color: #555;">Negative Reviews</label>
+        <div class="value" id="fbNegReviews" style="font-size: 1.8rem; margin: 10px 0;">0</div>
+        <span class="sub">(1-2 stars)</span>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+      <strong style="margin-right: 10px;">▼ Filter by Rating:</strong>
+      <div class="btn-group" id="ratingFilters" style="display: flex; gap: 5px;">
+        <button class="btn primary small active" data-rating="all">All Reviews</button>
+        <button class="btn ghost small" data-rating="5">5 ★</button>
+        <button class="btn ghost small" data-rating="4">4 ★</button>
+        <button class="btn ghost small" data-rating="3">3 ★</button>
+        <button class="btn ghost small" data-rating="2">2 ★</button>
+        <button class="btn ghost small" data-rating="1">1 ★</button>
+      </div>
+    </div>
+
+    <!-- Feedback Table -->
+    <div class="card">
+      <div class="card-head" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border);">
+        <h3 style="margin: 0;"><span class="icon">💬</span> Customer Reviews</h3>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="text" id="searchFeedback" class="input small" placeholder="Search feedback..." style="width: 200px;">
+          <select id="itemsPerPage" class="small-select">
+            <option value="10">10 per page</option>
+            <option value="25">25 per page</option>
+            <option value="50">50 per page</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table" style="width: 100%; border-collapse: collapse;">
+          <thead style="background: var(--ink); color: #fff;">
+            <tr>
+              <th style="padding: 12px; text-align: left;">ID</th>
+              <th style="padding: 12px; text-align: left;">CUSTOMER</th>
+              <th style="padding: 12px; text-align: left;">RATING</th>
+              <th style="padding: 12px; text-align: left;">COMMENT</th>
+              <th style="padding: 12px; text-align: center;">STATUS</th>
+              <th style="padding: 12px; text-align: left;">DATE</th>
+              <th style="padding: 12px; text-align: center;">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="fullFeedbackBody">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
+      <!-- Pagination -->
+      <div style="display: flex; justify-content: center; gap: 5px; padding: 15px;" id="fbPagination">
+        <!-- JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Full Sales Management Module -->
+  <main class="container" id="salesModule" style="display:none;">
+    <div class="dash-header">
+      <div>
+        <h1 class="page-title">Sales Management</h1>
+        <p class="muted">Detailed history of all platform transactions.</p>
+      </div>
+      <div class="dash-meta">
+        <button class="btn ghost small" onclick="showModule('dashboard')">← Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--border);">
+        <h3 style="margin: 0;"><span class="icon">🛒</span> All Sales Transactions</h3>
+        <div>
+          <!-- Placeholder for export or other actions -->
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table" style="width: 100%; border-collapse: collapse;">
+          <thead style="background: var(--ink); color: #fff; font-size: 0.85rem; letter-spacing: 1px;">
+            <tr>
+              <th style="padding: 12px; text-align: left;">SALE ID</th>
+              <th style="padding: 12px; text-align: left;">ORDER ID</th>
+              <th style="padding: 12px; text-align: left;">AMOUNT</th>
+              <th style="padding: 12px; text-align: left;">DATE</th>
+            </tr>
+          </thead>
+          <tbody id="fullSalesBody">
+            <!-- JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- FEEDBACK VIEW MODAL -->
+  <div class="modal-overlay" id="fbViewModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h3>Review Details</h3>
+          <p class="muted">Read full review and manage status.</p>
+        </div>
+        <button class="icon-btn" onclick="closeFbModal()">✕</button>
+      </div>
+
+      <div style="padding: 20px;">
+        <div style="margin-bottom: 20px;">
+          <div style="font-weight:600; font-size:1.1rem;" id="fbModalCustomer">Kamal Perera</div>
+          <div class="muted" style="margin-bottom:10px;" id="fbModalMeta">Order #TC-000000 • Date</div>
+          <div class="rating-stars" id="fbModalRating">★★★★★</div>
+        </div>
+
+        <div style="background:#F4F1ED; padding:15px; border-radius:8px; margin-bottom:20px; line-height:1.6;"
+          id="fbModalText">
+          "This is the review text."
+        </div>
+
+        <div id="replySection" style="margin-bottom: 20px;">
+          <label style="font-weight:600; display:block; margin-bottom:8px;">Manager's Reply</label>
+          <textarea class="input" id="fbModalReply" placeholder="Type your response here..." style="min-height:100px; resize:vertical;"></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn secondary" id="btnSaveReply" style="background:var(--gold); color:#fff; border:none; padding:12px 24px; border-radius:12px; font-weight:600; cursor:pointer;">Save Reply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <div class="brand-logo" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold), var(--gold2)); font-size: 24px; box-shadow: 0 4px 15px var(--gold-glow);">🧵</div>
+          <div class="brand-name" style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; color: var(--gold2); margin-left: 10px;">ZEE FASHION</div>
+        </div>
+        <p class="footer-desc">Your premier destination for high-quality fabrics. We curate the finest textiles from around the world for creators, designers, and DIY enthusiasts.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn">f</a>
+          <a href="#" class="social-btn">i</a>
+          <a href="#" class="social-btn">p</a>
+          <a href="#" class="social-btn">y</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <ul>
+          <li><a href="/pages/products.html">Shop</a></li>
+          <li><a href="/pages/cart.html">Cart</a></li>
+          <li><a href="/pages/login.html">Login</a></li>
+          <li><a href="/pages/register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Shipping & Delivery</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Details</h4>
+        <div class="contact-item">
+          <span>🏬</span>
+          <div class="contact-details">
+            <strong>Shop Name</strong>
+            <div>ZEE FASHION</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>👤</span>
+          <div class="contact-details">
+            <strong>Owner Name</strong>
+            <div>M.Z Aathif</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>📞</span>
+          <div class="contact-details">
+            <strong>Contact</strong>
+            <div>0777718414</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>✉️</span>
+          <div class="contact-details">
+            <strong>Email</strong>
+            <div>mohammedaathif269@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ZEE FASHION. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/js/authcheck.js"></script>
+  <script src="/js/sales.js"></script>
+</body>
+
+</html>
