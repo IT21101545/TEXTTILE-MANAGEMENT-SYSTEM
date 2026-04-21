@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ZEE FASHION — Order & Customer Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- PROMO BAR -->
+<div class="promo-bar">
+    <span>🎁 BECOME A VIP MEMBER</span>
+    <span>🚚 FREE SHIPPING Rs.5000+</span>
+    <span>↩ RETURNS</span>
+    <span>⭐ TRUSTED BY THOUSANDS! RATED 4.8/5 FROM 9,000+ REVIEWS</span>
+</div>
+
+<!-- HEADER -->
+<header>
+    <a class="header-logo" href="#">
+        <div class="logo-icon">👕</div>
+        <div class="logo-text">
+            <h1>ZEE FASHION</h1>
+            <p>Order & Customer Management</p>
+        </div>
+    </a>
+    <nav>
+        <a href="#">HOME</a>
+        <a href="#" class="active">ORDERS</a>
+        <a href="#">CUSTOMERS</a>
+        <a href="#">REPORTS</a>
+    </nav>
+    <div class="header-right">
+        <span class="badge-role">ORDER MANAGER</span>
+        <button class="btn-logout">Logout</button>
+    </div>
+</header>
+
+<!-- MAIN -->
+<main>
+    <div class="page-header">
+        <h2>Order & Customer Management</h2>
+        <p>Manage orders, track customers, and monitor sales activity</p>
+    </div>
+
+    <div class="date-bar">
+        <span id="date-display"></span>
+        <button class="btn-refresh" onclick="refreshData()">↻ Refresh</button>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div>
+            <h3>Welcome, Order Manager!</h3>
+            <p>Track orders, manage customers, and monitor delivery statuses.</p>
+        </div>
+        <div class="icon">📦</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue">📋</div>
+            <div>
+                <div class="stat-label">Total Orders</div>
+                <div class="stat-value">24</div>
+                <div class="stat-sub">All time</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">✅</div>
+            <div>
+                <div class="stat-label">Completed</div>
+                <div class="stat-value">18</div>
+                <div class="stat-sub">Successfully fulfilled</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orange">⏳</div>
+            <div>
+                <div class="stat-label">Pending</div>
+                <div class="stat-value">4</div>
+                <div class="stat-sub">Awaiting processing</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon purple">👥</div>
+            <div>
+                <div class="stat-label">Total Customers</div>
+                <div class="stat-value">12</div>
+                <div class="stat-sub">Registered</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('orders', this)">📋 Orders</button>
+        <button class="tab-btn" onclick="switchTab('customers', this)">👥 Customers</button>
+    </div>
+
+    <!-- ORDERS PANEL -->
+    <div id="panel-orders" class="panel active">
+        <div class="card">
+            <div class="card-header">
+                <h3>🔄 Recent Orders</h3>
+                <button class="btn btn-gold btn-sm" onclick="openModal('modal-new-order')">+ New Order</button>
+            </div>
+            <div class="card-body">
+                <div class="filter-bar">
+                    <div class="search-wrap">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="Search by order ID, customer..." oninput="filterOrders(this.value)" />
+                    </div>
+                    <select class="filter-select" onchange="filterOrdersByStatus(this.value)">
+                        <option value="">All Statuses</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <button class="btn btn-outline btn-sm">Export CSV</button>
+                </div>
+                <table class="data-table" id="orders-table">
+                    <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="orders-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOMERS PANEL -->
+    <div id="panel-customers" class="panel">
+        <div class="card-header customers-header">
+            <h3>👥 Customer Directory</h3>
+            <button class="btn btn-gold btn-sm" onclick="openModal('modal-new-customer')">+ Add Customer</button>
+        </div>
+        <div class="filter-bar" style="margin-bottom:1rem;">
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search customers..." oninput="filterCustomers(this.value)" />
+            </div>
+        </div>
+        <div class="customers-grid" id="customers-grid"></div>
+    </div>
+</main>
+
+<!-- ===== MODALS ===== -->
+
+<!-- New Order Modal -->
+<div class="modal-overlay" id="modal-new-order">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('modal-new-order')">✕</button>
+        <div class="modal-title">New Order</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Customer</label>
+                <select id="new-order-customer">
+                    <option value="">Select customer...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="new-order-status">
+                    <option>Pending</option>
+                    <option>Processing</option>
+                    <option>Completed</option>
+                    <option>Cancelled</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Product</label>
+                <select id="new-order-product">
+                    <option>Cotton Fabric 100m</option>
+                    <option>Silk Roll 50m</option>
+                    <option>Linen Batch 200m</option>
+                    <option>Polyester Blend 80m</option>
+                    <option>Denim Fabric 60m</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" id="new-order-qty" value="1" min="1" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Total Amount (Rs.)</label>
+                <input type="number" id="new-order-amount" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+                <label>Delivery Date</label>
+                <input type="date" id="new-order-date" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Notes</label>
+            <textarea id="new-order-notes" rows="2" placeholder="Any special instructions..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeModal('modal-new-order')">Cancel</button>
+            <button class="btn btn-gold" onclick="createOrder()">Create Order</button>
+        </div>
+    </div>
+</div>
+
+<!-- New Customer Modal -->
+<div class="modal-overlay" id="modal-new-customer">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('modal-new-customer')">✕</button>
+        <div class="modal-title">Add Customer</div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" id="cust-fname" placeholder="John" />
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" id="cust-lname" placeholder="Doe" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="cust-email" placeholder="email@example.com" />
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="cust-phone" placeholder="+94 77 000 0000" />
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" id="cust-city" placeholder="Colombo" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Address</label>
+            <input type="text" id="cust-address" placeholder="No. 12, Galle Road, Colombo 03" />
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeModal('modal-new-customer')">Cancel</button>
+            <button class="btn btn-gold" onclick="addCustomer()">Add Customer</button>
+        </div>
+    </div>
+</div>
+
+<!-- View Order Modal -->
+<div class="modal-overlay" id="modal-view-order">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('modal-view-order')">✕</button>
+        <div class="modal-title" id="view-order-title">Order Details</div>
+        <div id="view-order-content"></div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeModal('modal-view-order')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Order Modal -->
+<div class="modal-overlay" id="modal-edit-order">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal('modal-edit-order')">✕</button>
+        <div class="modal-title">Edit Order</div>
+        <input type="hidden" id="edit-order-idx" />
+        <div class="form-group">
+            <label>Customer</label>
+            <input type="text" id="edit-order-customer" readonly style="background:#f5f5f5;" />
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Status</label>
+                <select id="edit-order-status">
+                    <option>Pending</option>
+                    <option>Processing</option>
+                    <option>Completed</option>
+                    <option>Cancelled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Total Amount (Rs.)</label>
+                <input type="number" id="edit-order-amount" />
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeModal('modal-edit-order')">Cancel</button>
+            <button class="btn btn-gold" onclick="saveEditOrder()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <h3>👕 ZEE FASHION</h3>
+            <p>Your premier destination for high-quality fabrics. We curate the finest textiles from around the world for creators, designers, and DIY enthusiasts.</p>
+            <div class="footer-social">
+                <a href="#">f</a>
+                <a href="#">in</a>
+                <a href="#">p</a>
+                <a href="#">▶</a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4>Customer Care <span></span></h4>
+            <ul>
+                <li><a href="#">Shipping & Delivery</a></li>
+                <li><a href="#">Returns & Exchanges</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">FAQ</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Contact Details <span></span></h4>
+            <div class="footer-contact">
+                <div class="footer-contact-row">
+                    <span class="icon">🏪</span>
+                    <span><strong>Shop Name:</strong> ZEE FASHION</span>
+                </div>
+                <div class="footer-contact-row">
+                    <span class="icon">👤</span>
+                    <span><strong>Client Name:</strong> M.Z Aathif</span>
+                </div>
+                <div class="footer-contact-row">
+                    <span class="icon">📞</span>
+                    <span><strong>Contact:</strong> 0777718414</span>
+                </div>
+                <div class="footer-contact-row">
+                    <span class="icon">✉️</span>
+                    <span><strong>Email:</strong> mohammedaathif269@gmail.com</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 ZEE FASHION. All rights reserved.</span>
+        <span><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></span>
+    </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
