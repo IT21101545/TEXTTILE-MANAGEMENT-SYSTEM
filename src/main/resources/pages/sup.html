@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZEE FASHION — Suppliers & Raw Materials</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/user.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">🧵</div>
+    <div>
+      <div class="brand-name">ZEE FASHION</div>
+      <div class="brand-sub">Supplier & Raw Material Management</div>
+    </div>
+  </div>
+
+    <nav class="global-nav" id="globalNav">
+      <a href="/pages/inventory.html" data-role="INVENTORY_ADMIN">Inventory</a>
+      <a href="/pages/sup.html" class="active" data-role="SUPPLIER_ADMIN">Suppliers</a>
+      <a href="/pages/login.html" id="navLogin">Login</a>
+    </nav>
+
+  <div class="topbar-actions">
+    <div class="notif-btn" id="notifBtn" title="Supplier Notifications">
+      <span>🔔</span>
+      <div class="notif-badge" id="notifBadge">0</div>
+    </div>
+    <button class="btn primary" id="btnNewPurchase">+ Record Purchase</button>
+    <button class="btn ghost small" onclick="logoutApp()" style="margin-left: 10px;">Logout</button>
+  </div>
+</header>
+
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header">
+    <h4>Supplier Notifications</h4>
+    <button class="icon-btn" id="btnCloseNotif">✕</button>
+  </div>
+  <div id="notifList" class="notif-list">
+    <div class="notif-empty">No new alerts for suppliers.</div>
+  </div>
+</div>
+
+<main class="container">
+  <nav class="tabs">
+    <button class="tab active" data-tab="suppliers">Suppliers</button>
+    <button class="tab" data-tab="materials">Raw Materials</button>
+    <button class="tab" data-tab="purchases">Purchases</button>
+    <button class="tab" data-tab="analytics">Analytics</button>
+  </nav>
+
+  <!-- SUPPLIERS -->
+  <section class="panel show" id="tab-suppliers">
+    <div class="panel-head">
+      <div>
+        <h2>Suppliers</h2>
+        <p class="muted">Manage supplier partnerships and directory for administrative oversight.</p>
+      </div>
+      <div class="toolbar">
+        <input class="input" id="supplierSearch" placeholder="Search supplier name / email / phone...">
+        <select class="input" id="supplierStatusFilter">
+          <option value="all">All Status</option>
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="INACTIVE">INACTIVE</option>
+        </select>
+        <button class="btn primary" id="btnNewSupplier">+ New Supplier</button>
+      </div>
+    </div>
+
+    <section class="kpi-grid">
+      <div class="card kpi">
+        <div class="kpi-label">Total Suppliers</div>
+        <div class="kpi-value" id="kpiSuppliers">0</div>
+        <div class="kpi-sub muted">Registered</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Active</div>
+        <div class="kpi-value" id="kpiSuppliersActive">0</div>
+        <div class="kpi-sub muted">Currently supplying</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Purchases (30 days)</div>
+        <div class="kpi-value" id="kpiPurch30">0</div>
+        <div class="kpi-sub muted">Recent purchases</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Spend (30 days)</div>
+        <div class="kpi-value" id="kpiSpend30">Rs. 0.00</div>
+        <div class="kpi-sub muted">Recent total</div>
+      </div>
+    </section>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Supplier List</h3>
+        <div class="muted" id="supplierCount">0 suppliers</div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" id="suppliersTable">
+          <thead>
+          <tr>
+            <th>Supplier</th>
+            <th>Type</th>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>Volume</th>
+            <th>Status</th>
+            <th class="right">Actions</th>
+          </tr>
+          </thead>
+          <tbody><!-- JS --></tbody>
+        </table>
+      </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- MATERIALS -->
+  <section class="panel" id="tab-materials">
+    <div class="panel-head">
+      <div>
+        <h2>Raw Materials</h2>
+        <p class="muted">Inventory management and real-time stock tracking for operational efficiency.</p>
+      </div>
+      <div class="toolbar">
+        <input class="input" id="materialSearch" placeholder="Search material name / code...">
+        <select class="input" id="materialFilter">
+          <option value="all">All Materials</option>
+          <option value="low">Low Stock Only</option>
+          <option value="out">Out of Stock</option>
+        </select>
+        <button class="btn primary" id="btnMainNewMaterial">+ New Material</button>
+      </div>
+    </div>
+
+    <section class="kpi-grid">
+      <div class="card kpi">
+        <div class="kpi-label">Total Materials</div>
+        <div class="kpi-value" id="kpiMaterials">0</div>
+        <div class="kpi-sub muted">Tracked items</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Total Stock</div>
+        <div class="kpi-value" id="kpiMatStock">0</div>
+        <div class="kpi-sub muted">Units / kg / liters</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Low Stock</div>
+        <div class="kpi-value" id="kpiMatLow">0</div>
+        <div class="kpi-sub muted">Below threshold</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Out of Stock</div>
+        <div class="kpi-value" id="kpiMatOut">0</div>
+        <div class="kpi-sub muted">Zero stock</div>
+      </div>
+    </section>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Materials List</h3>
+        <div class="muted" id="materialCount">0 materials</div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" id="materialsTable">
+          <thead>
+            <th>Material</th>
+            <th>Code</th>
+            <th>Unit</th>
+            <th>Supplier Stock</th>
+            <th>Inventory Stock</th>
+            <th>Shop Stock</th>
+            <th class="right">Actions</th>
+          </thead>
+          <tbody><!-- JS --></tbody>
+        </table>
+      </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PURCHASES -->
+  <section class="panel" id="tab-purchases">
+    <div class="panel-head">
+      <div>
+        <h2>Purchases</h2>
+        <p class="muted">Procurement logs and comprehensive purchase history for secure record-keeping.</p>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3>Purchase History</h3>
+        <div class="muted" id="purchaseCount">0 records</div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" id="purchasesTable">
+          <thead>
+          <tr>
+            <th>Purchase</th>
+            <th>Date</th>
+            <th>Supplier</th>
+            <th>Material</th>
+            <th class="right">Qty</th>
+            <th class="right">Unit Price</th>
+            <th class="right">Total</th>
+            <th class="right">Actions</th>
+          </tr>
+          </thead>
+          <tbody><!-- JS --></tbody>
+        </table>
+      </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section class="panel" id="tab-analytics">
+    <div class="panel-head">
+      <div>
+        <h2>Purchase Analytics</h2>
+        <p class="muted">Strategic insights into procurement trends, expenditure, and supplier performance.</p>
+      </div>
+    </div>
+
+    <section class="kpi-grid">
+      <div class="card kpi">
+        <div class="kpi-label">Total Spend</div>
+        <div class="kpi-value" id="anTotalSpend">Rs. 0.00</div>
+        <div class="kpi-sub muted">All purchases</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Total Purchases</div>
+        <div class="kpi-value" id="anTotalPurch">0</div>
+        <div class="kpi-sub muted">Records</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Top Supplier</div>
+        <div class="kpi-value" id="anTopSupplier">—</div>
+        <div class="kpi-sub muted" id="anTopSupplierSub">—</div>
+      </div>
+      <div class="card kpi">
+        <div class="kpi-label">Top Material</div>
+        <div class="kpi-value" id="anTopMaterial">—</div>
+        <div class="kpi-sub muted" id="anTopMaterialSub">—</div>
+      </div>
+    </section>
+
+
+
+    </div>
+  </section>
+</main>
+
+<!-- SUPPLIER MODAL -->
+<div class="modal-overlay" id="supplierModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="smTitle">New Supplier</h3>
+        <p class="muted" id="smSub">Create supplier record.</p>
+      </div>
+      <button class="icon-btn" id="btnCloseSupplier">✕</button>
+    </div>
+
+    <form class="form" id="supplierForm">
+      <input type="hidden" id="supId">
+
+      <div class="field">
+        <label>Supplier Name</label>
+        <input class="input" id="supName" required placeholder="Lanka Textile Supplies">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Email</label>
+          <input class="input" id="supEmail" type="email" required placeholder="supplier@email.com">
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input class="input" id="supPhone" required placeholder="+94 77 123 4567">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Address</label>
+        <input class="input" id="supAddress" required placeholder="Colombo">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Status</label>
+          <select class="input" id="supStatus">
+            <option value="ACTIVE" selected>ACTIVE</option>
+            <option value="INACTIVE">INACTIVE</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Material Categories (e.g. Fabric, Silk)</label>
+          <input class="input" id="supMaterialType" placeholder="General description...">
+        </div>
+      </div>
+
+      <div class="field" style="margin-top: 15px;">
+        <label>Formally Supplied Materials</label>
+        <div id="supMaterialsTagList" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; padding: 10px; border: 1px dashed var(--border); border-radius: 8px; min-height: 44px;">
+          <!-- Tags go here -->
+          <div class="muted" style="font-size: 0.85rem;">No materials linked yet.</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <select class="input" id="supMaterialPicker" style="flex: 1;">
+            <option value="">Select a material to add...</option>
+          </select>
+          <button class="btn ghost2" type="button" id="btnAddPickedMaterial" title="Link Existing Material">+ Link</button>
+          <button class="btn ghost2" type="button" id="btnModalQuickMaterial" title="Create New Material Type">+ New</button>
+        </div>
+        <p class="muted" style="font-size: 0.75rem; margin-top: 4px;">Linking materials here allows you to record purchases for them from this supplier.</p>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Notes</label>
+          <input class="input" id="supNotes" placeholder="Optional notes...">
+        </div>
+        <div class="field">
+          <label>Total Volume Supplied (Read-only)</label>
+          <input class="input" id="supTotalVolume" type="number" readonly value="0">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="submit" id="btnSaveSupplier">Save</button>
+        <button class="btn ghost2" type="button" id="btnCancelSupplier">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<!-- STOCK ADJUST MODAL -->
+<div class="modal-overlay" id="stockModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>Adjust Material Stock</h3>
+        <p class="muted">Increase or decrease stock. Negative stock is prevented.</p>
+      </div>
+      <button class="icon-btn" id="btnCloseStock">✕</button>
+    </div>
+
+    <form class="form" id="stockForm">
+      <input type="hidden" id="stkMatId">
+
+      <div class="info">
+        <div class="dot"></div>
+        <div>
+          <div><strong id="stkMatTitle">Material</strong></div>
+          <div class="muted">Current stock: <strong id="stkCurrent">0</strong></div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div class="field">
+          <label>Action</label>
+          <select class="input" id="stkAction">
+            <option value="add" selected>Add Stock</option>
+            <option value="remove">Remove Stock</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Quantity</label>
+          <input class="input" id="stkQty" type="number" min="1" step="1" required placeholder="10">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Reason</label>
+        <input class="input" id="stkReason" placeholder="Damage / usage / correction...">
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="submit">Apply</button>
+        <button class="btn ghost2" type="button" id="btnCancelStock">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- PURCHASE MODAL -->
+<div class="modal-overlay" id="purchaseModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="pmTitle">Record Purchase</h3>
+        <p class="muted">Track purchases of raw materials from suppliers (adds to stock automatically).</p>
+      </div>
+      <button class="icon-btn" id="btnClosePurchase">✕</button>
+    </div>
+
+    <form class="form" id="purchaseForm">
+      <input type="hidden" id="purId">
+
+      <div class="row">
+        <div class="field">
+          <label>Date</label>
+          <input class="input" id="purDate" type="date" required>
+        </div>
+        <div class="field">
+          <label>Invoice No</label>
+          <input class="input" id="purInvoice" required placeholder="INV-2026-0021">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Supplier</label>
+          <select class="input" id="purSupplierId" required></select>
+        </div>
+        <div class="field">
+          <label>Material</label>
+          <div style="display: flex; gap: 8px;">
+            <select class="input" id="purMaterialId" required style="flex: 1;"></select>
+            <button class="btn ghost2" type="button" id="btnQuickAddMaterial" title="Add New Material Type">+ New</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Quantity</label>
+          <input class="input" id="purQty" type="number" min="1" step="1" required placeholder="20">
+        </div>
+        <div class="field">
+          <label>Unit Price</label>
+          <input class="input" id="purUnitPrice" type="number" min="0" step="0.01" required placeholder="650.00">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Total</label>
+          <input class="input" id="purTotal" type="number" min="0" step="0.01" required placeholder="13000.00">
+        </div>
+        <div class="field">
+          <label>Notes</label>
+          <input class="input" id="purNotes" placeholder="Optional notes...">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="submit">Save</button>
+        <button class="btn ghost2" type="button" id="btnCancelPurchase">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MATERIAL MODAL (Defined after Purchase to appear on top if nested) -->
+<div class="modal-overlay" id="materialModal" style="z-index: 1100;">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="mmTitle">New Material</h3>
+        <p class="muted" id="mmSub">Create raw material record.</p>
+      </div>
+      <button class="icon-btn" id="btnCloseMaterial">✕</button>
+    </div>
+
+    <form class="form" id="materialForm">
+      <input type="hidden" id="matId">
+
+      <div class="row">
+        <div class="field">
+          <label>Material Name</label>
+          <input class="input" id="matName" required placeholder="Cotton Yarn">
+        </div>
+        <div class="field">
+          <label>Code</label>
+          <input class="input" id="matCode" required placeholder="RM-COT-01">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Unit</label>
+          <select class="input" id="matUnit">
+            <option value="kg" selected>kg</option>
+            <option value="meter">meter</option>
+            <option value="liter">liter</option>
+            <option value="piece">piece</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Initial Stock</label>
+          <input class="input" id="matStock" type="number" min="0" step="1" required placeholder="50">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Low-stock Threshold</label>
+          <input class="input" id="matLow" type="number" min="0" step="1" required placeholder="10">
+        </div>
+        <div class="field">
+          <label>Notes</label>
+          <input class="input" id="matNotes" placeholder="Optional notes...">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="submit" id="btnSaveMaterial">Save</button>
+        <button class="btn ghost2" type="button" id="btnCancelMaterial">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TRANSFER WORKFLOW MODAL -->
+<div class="modal-overlay" id="transferWorkflowModal">
+  <div class="modal" style="max-width: 450px;">
+    <div class="modal-head">
+      <div>
+        <h3 id="twTitle">Stock Transfer</h3>
+        <p class="muted" id="twSub">Move stock between stages.</p>
+      </div>
+      <button class="icon-btn" id="btnCloseTransfer">✕</button>
+    </div>
+
+    <form class="form" id="transferWorkflowForm">
+      <input type="hidden" id="twId">
+      <input type="hidden" id="twType"> <!-- "TO_INVENTORY" or "TO_SHOP" -->
+      
+      <div class="info" style="margin-bottom: 20px; background: var(--bg-soft); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span class="muted" id="twSourceLabel">Source Stock</span>
+          <span class="badge" id="twSourceVal" style="font-size: 1.1rem;">0</span>
+        </div>
+        <div style="font-weight: 600; color: var(--gold2); text-align: center; font-size: 0.9rem;" id="twFlowLabel">
+          Moving to Inventory
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Quantity to Transfer</label>
+        <input class="input" id="twQty" type="number" min="1" step="1" required placeholder="Enter amount...">
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="submit" id="btnDoTransfer">Confirm Transfer</button>
+        <button class="btn ghost2" type="button" id="btnCancelTransfer">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <div class="brand-logo" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold), var(--gold2)); font-size: 24px; box-shadow: 0 4px 15px var(--gold-glow);">🧵</div>
+          <div class="brand-name" style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; color: var(--gold2); margin-left: 10px;">ZEE FASHION</div>
+        </div>
+        <p class="footer-desc">Your premier destination for high-quality fabrics. We curate the finest textiles from around the world for creators, designers, and DIY enthusiasts.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn">f</a>
+          <a href="#" class="social-btn">i</a>
+          <a href="#" class="social-btn">p</a>
+          <a href="#" class="social-btn">y</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <ul>
+          <li><a href="/pages/products.html">Shop</a></li>
+          <li><a href="/pages/cart.html">Cart</a></li>
+          <li><a href="/pages/login.html">Login</a></li>
+          <li><a href="/pages/register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Shipping & Delivery</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Details</h4>
+        <div class="contact-item">
+          <span>🏬</span>
+          <div class="contact-details">
+            <strong>Shop Name</strong>
+            <div>ZEE FASHION</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>👤</span>
+          <div class="contact-details">
+            <strong>Owner Name</strong>
+            <div>M.Z Aathif</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>📞</span>
+          <div class="contact-details">
+            <strong>Contact</strong>
+            <div>0777718414</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>✉️</span>
+          <div class="contact-details">
+            <strong>Email</strong>
+            <div>mohammedaathif269@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ZEE FASHION. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/js/authcheck.js"></script>
+  <script src="/js/sup.js"></script>
+</body>
+</html>

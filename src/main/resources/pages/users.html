@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZEE FASHION — Users</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/user.css">
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">🧵</div>
+      <div>
+        <div class="brand-name">ZEE FASHION</div>
+        <div class="brand-sub">User & Authentication</div>
+      </div>
+    </div>
+
+    <nav class="global-nav" id="globalNav">
+      <a href="/pages/users.html" class="active" data-role="ADMIN">Users</a>
+      <a href="/pages/login.html" id="navLogin">Login</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <div class="user-pill" id="userPill" style="display:none;">
+        <span id="pillName">User</span>
+        <span class="role" id="pillRole">ROLE</span>
+      </div>
+      <button class="btn ghost small" id="btnLogout" onclick="logoutApp()" style="margin-left: 10px;">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="panel show" id="tab-users">
+      <div class="panel-head">
+        <div>
+          <h2>User Management (Admin)</h2>
+          <p class="muted">Create, search, edit, and delete users with role control.</p>
+        </div>
+
+        <div class="toolbar">
+          <input class="input" id="userSearch" placeholder="Search name/email...">
+          <select class="input" id="userRoleFilter">
+            <option value="all">All roles</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="STAFF">STAFF</option>
+            <option value="INVENTORY_ADMIN">INVENTORY_ADMIN</option>
+            <option value="SUPPLIER_ADMIN">SUPPLIER_ADMIN</option>
+            <option value="SALES_MANAGER">SALES_MANAGER</option>
+            <option value="ORDER_ADMIN">ORDER_ADMIN</option>
+            <option value="CUSTOMER">CUSTOMER</option>
+          </select>
+          <button class="btn primary" id="btnNewUser">+ New User</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Users List</h3>
+          <div class="muted" id="userCount">0 users</div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table" id="usersTable">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th class="right">Actions</th>
+              </tr>
+            </thead>
+            <tbody><!-- JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error if not admin -->
+    <div id="notAdminMsg" style="display:none; text-align:center; padding: 50px;">
+        <h2>Access Denied</h2>
+        <p class="muted">You must be an ADMIN to view this page.</p>
+    </div>
+  </main>
+
+  <!-- USER MODAL (ADMIN CREATE/EDIT) -->
+  <div class="modal-overlay" id="userModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h3 id="userModalTitle">New User</h3>
+          <p class="muted" id="userModalSub">Create a new user account.</p>
+        </div>
+        <button class="icon-btn" id="btnCloseUserModal">✕</button>
+      </div>
+
+      <form class="form" id="userForm">
+        <input type="hidden" id="umId">
+
+        <div class="row">
+          <div class="field">
+            <label>First Name</label>
+            <input class="input" id="umFirst" required>
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <input class="input" id="umLast" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input class="input" id="umEmail" type="email" required>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Role</label>
+            <select class="input" id="umRole">
+              <option value="CUSTOMER">CUSTOMER</option>
+              <option value="STAFF">STAFF</option>
+              <option value="INVENTORY_ADMIN">INVENTORY_ADMIN</option>
+              <option value="SUPPLIER_ADMIN">SUPPLIER_ADMIN</option>
+              <option value="SALES_MANAGER">SALES_MANAGER</option>
+              <option value="ORDER_ADMIN">ORDER_ADMIN</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select class="input" id="umStatus">
+              <option value="ACTIVE" selected>ACTIVE</option>
+              <option value="DISABLED">DISABLED</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field" id="umPasswordWrap">
+          <label>Temporary Password</label>
+          <input class="input" id="umPassword" type="password" placeholder="Set a temporary password">
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" type="submit" id="btnSaveUser">Save</button>
+          <button class="btn ghost2" type="button" id="btnCancelUser">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <div class="brand-logo" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--gold), var(--gold2)); font-size: 24px; box-shadow: 0 4px 15px var(--gold-glow);">🧵</div>
+          <div class="brand-name" style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; color: var(--gold2); margin-left: 10px;">ZEE FASHION</div>
+        </div>
+        <p class="footer-desc">Your premier destination for high-quality fabrics. We curate the finest textiles from around the world for creators, designers, and DIY enthusiasts.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn">f</a>
+          <a href="#" class="social-btn">i</a>
+          <a href="#" class="social-btn">p</a>
+          <a href="#" class="social-btn">y</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer</h4>
+        <ul>
+          <li><a href="/pages/products.html">Shop</a></li>
+          <li><a href="/pages/cart.html">Cart</a></li>
+          <li><a href="/pages/login.html">Login</a></li>
+          <li><a href="/pages/register.html">Register</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Shipping & Delivery</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact Details</h4>
+        <div class="contact-item">
+          <span>🏬</span>
+          <div class="contact-details">
+            <strong>Shop Name</strong>
+            <div>ZEE FASHION</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>👤</span>
+          <div class="contact-details">
+            <strong>Owner Name</strong>
+            <div>M.Z Aathif</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>📞</span>
+          <div class="contact-details">
+            <strong>Contact</strong>
+            <div>0777718414</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span>✉️</span>
+          <div class="contact-details">
+            <strong>Email</strong>
+            <div>mohammedaathif269@gmail.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 ZEE FASHION. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/js/authcheck.js"></script>
+  <script src="/js/users.js"></script>
+</body>
+</html>
